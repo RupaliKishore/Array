@@ -1,0 +1,10 @@
+Array Reference
+
+
+int[] array1 = {1, 2, 3};
+int[] array2 = array1;  // array2 references the SAME array as array1
+
+array2[0] = 99;  // modifies array1[0] as well!
+
+System.out.println(array1[0]);  // Output: 99
+System.out.println(array2[0]);  // Output: 99
