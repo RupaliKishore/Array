@@ -1,0 +1,33 @@
+Last Stone Weight
+
+
+
+
+
+import java.util.PriorityQueue;
+import java.util.Collections;
+
+class Solution {
+    public int lastStoneWeight(int[] stones) {
+        // Max heap (PriorityQueue with reverse order)
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        
+        // Add all stones to max heap
+        for (int stone : stones) {
+            maxHeap.offer(stone);
+        }
+        
+        // Process stones until at most 1 remains
+        while (maxHeap.size() > 1) {
+            int heaviest = maxHeap.poll();
+            int secondHeaviest = maxHeap.poll();
+            
+            if (heaviest != secondHeaviest) {
+                maxHeap.offer(heaviest - secondHeaviest);
+            }
+            // If equal, both are eliminated (nothing to add back)
+        }
+        
+        return maxHeap.isEmpty() ? 0 : maxHeap.poll();
+    }
+}
