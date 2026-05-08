@@ -1,0 +1,33 @@
+. Number of Students Unable to Eat Lunch
+
+
+
+import java.util.LinkedList;
+import java.util.Queue;
+
+class Solution {
+    public int countStudents(int[] students, int[] sandwiches) {
+        Queue<Integer> studentQueue = new LinkedList<>();
+        for (int student : students) {
+            studentQueue.offer(student);
+        }
+        
+        int sandwichIndex = 0;
+        int attempts = 0;
+        int n = students.length;
+        
+        while (!studentQueue.isEmpty() && attempts < studentQueue.size()) {
+            if (studentQueue.peek() == sandwiches[sandwichIndex]) {
+                studentQueue.poll(); // Student takes sandwich
+                sandwichIndex++;
+                attempts = 0; // Reset attempts counter
+            } else {
+                // Move student to back of queue
+                studentQueue.offer(studentQueue.poll());
+                attempts++;
+            }
+        }
+        
+        return studentQueue.size();
+    }
+}
