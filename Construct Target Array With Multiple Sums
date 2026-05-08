@@ -1,0 +1,53 @@
+Construct Target Array With Multiple Sums
+
+
+
+
+
+import java.util.PriorityQueue;
+
+class Solution {
+    public boolean isPossible(int[] target) {
+        if (target.length == 1) {
+            return target[0] == 1;
+        }
+        
+        PriorityQueue<Long> maxHeap = new PriorityQueue<>((a, b) -> Long.compare(b, a));
+        long totalSum = 0;
+        
+        // Add all elements to max heap and calculate total sum
+        for (int num : target) {
+            totalSum += num;
+            maxHeap.offer((long) num);
+        }
+        
+        while (maxHeap.peek() != 1) {
+            long largest = maxHeap.poll();
+            long remainingSum = totalSum - largest;
+            
+            // If remaining sum is 0 or largest <= remaining sum, impossible
+            if (remainingSum == 0 || largest <= remainingSum) {
+                return false;
+            }
+            
+            // Calculate previous value before it was replaced
+            long previous = largest % remainingSum;
+            
+            // If previous becomes 0, it means remainingSum divides largest
+            // This only works if previous becomes 1 (all ones case)
+            if (previous == 0) {
+                // Check if remainingSum == 1 (meaning all other elements are 1)
+                if (remainingSum != 1) {
+                    return false;
+                }
+                previous = remainingSum;
+            }
+            
+            // Update total sum and heap
+            totalSum = remainingSum + previous;
+            maxHeap.offer(previous);
+        }
+        
+        return true;
+    }
+}
