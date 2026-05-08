@@ -1,0 +1,22 @@
+Rotate String
+
+
+
+
+class Solution {
+    public boolean rotateString(String s, String goal) {
+        // If lengths differ, impossible
+        if (s.length() != goal.length()) {
+            return false;
+        }
+        
+        // If strings are equal, it's a valid rotation (0 rotations)
+        if (s.equals(goal)) {
+            return true;
+        }
+        
+        // Concatenate s with itself and check if goal is a substring
+        String doubled = s + s;
+        return doubled.contains(goal);
+    }
+}
