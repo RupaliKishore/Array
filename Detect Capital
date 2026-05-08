@@ -1,0 +1,26 @@
+Detect Capital
+
+
+
+
+class Solution {
+    public boolean detectCapitalUse(String word) {
+        // Case 1: All capitals
+        if (word.equals(word.toUpperCase())) {
+            return true;
+        }
+        
+        // Case 2: All lowercase
+        if (word.equals(word.toLowerCase())) {
+            return true;
+        }
+        
+        // Case 3: Only first letter capital
+        if (Character.isUpperCase(word.charAt(0)) && 
+            word.substring(1).equals(word.substring(1).toLowerCase())) {
+            return true;
+        }
+        
+        return false;
+    }
+}
