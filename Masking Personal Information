@@ -1,0 +1,49 @@
+Masking Personal Information
+
+
+
+
+
+class Solution {
+    public String maskPII(String s) {
+        // Check if it's an email (contains '@')
+        if (s.contains("@")) {
+            return maskEmail(s);
+        } else {
+            return maskPhone(s);
+        }
+    }
+    
+    private String maskEmail(String email) {
+        email = email.toLowerCase();
+        int atIndex = email.indexOf("@");
+        String firstName = email.substring(0, atIndex);
+        String domain = email.substring(atIndex);
+        
+        // Mask: first char + "*****" + last char + domain
+        return firstName.charAt(0) + "*****" + firstName.charAt(firstName.length() - 1) + domain;
+    }
+    
+    private String maskPhone(String phone) {
+        // Extract only digits
+        StringBuilder digits = new StringBuilder();
+        for (char c : phone.toCharArray()) {
+            if (Character.isDigit(c)) {
+                digits.append(c);
+            }
+        }
+        
+        String last4 = digits.substring(digits.length() - 4);
+        
+        // Format based on length
+        if (digits.length() == 10) {
+            return "***-***-" + last4;
+        } else if (digits.length() == 11) {
+            return "+*-***-***-" + last4;
+        } else if (digits.length() == 12) {
+            return "+**-***-***-" + last4;
+        } else { // 13 digits
+            return "+***-***-***-" + last4;
+        }
+    }
+}
