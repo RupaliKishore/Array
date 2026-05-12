@@ -25,7 +25,7 @@ class Solution {
             entropy -= p * (Math.log(p) / Math.log(2));
         }
         
-        // Round to 4 decimal places
-        return Math.round(entropy * 10000.0) / 10000.0;
+        // Return without rounding - let the output format handle decimal places
+        return entropy;
     }
 }
