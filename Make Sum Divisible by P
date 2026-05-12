@@ -1,0 +1,49 @@
+Make Sum Divisible by P
+
+
+
+
+
+import java.util.*;
+
+class Solution {
+    public int minSubarray(int[] nums, int p) {
+        // Calculate total sum and its remainder
+        long totalSum = 0;
+        for (int num : nums) {
+            totalSum += num;
+        }
+        
+        long remainder = totalSum % p;
+        if (remainder == 0) {
+            return 0; // Already divisible
+        }
+        
+        // We need to remove a subarray whose sum % p == remainder
+        int n = nums.length;
+        long prefixSum = 0;
+        int minLen = n;
+        
+        // Map to store last occurrence of a remainder
+        Map<Long, Integer> map = new HashMap<>();
+        map.put(0L, -1); // For prefix sum before first element
+        
+        for (int i = 0; i < n; i++) {
+            prefixSum = (prefixSum + nums[i]) % p;
+            
+            // We need to find a previous prefix sum such that
+            // (prefixSum - prevPrefix) % p == remainder
+            // => (prefixSum - remainder) % p == prevPrefix
+            long target = (prefixSum - remainder + p) % p;
+            
+            if (map.containsKey(target)) {
+                minLen = Math.min(minLen, i - map.get(target));
+            }
+            
+            // Store current prefix sum
+            map.put(prefixSum, i);
+        }
+        
+        return minLen == n ? -1 : minLen;
+    }
+}
