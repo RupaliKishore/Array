@@ -1,0 +1,23 @@
+Kth Largest Element in an Array
+
+
+
+import java.util.*;
+
+class Solution {
+    public int findKthLargest(int[] nums, int k) {
+        // Min-heap of size k
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        
+        for (int num : nums) {
+            minHeap.offer(num);
+            // Keep heap size at most k
+            if (minHeap.size() > k) {
+                minHeap.poll();
+            }
+        }
+        
+        // The root of min-heap is the kth largest
+        return minHeap.peek();
+    }
+}
