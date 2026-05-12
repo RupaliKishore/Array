@@ -1,0 +1,46 @@
+Insertion Sort List
+
+
+
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode insertionSortList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        
+        // Create a dummy node to serve as the new sorted list head
+        ListNode dummy = new ListNode(0);
+        ListNode current = head;
+        
+        while (current != null) {
+            // Store next node before modifying current's next
+            ListNode nextNode = current.next;
+            
+            // Find the position to insert current node in the sorted list
+            ListNode prev = dummy;
+            while (prev.next != null && prev.next.val < current.val) {
+                prev = prev.next;
+            }
+            
+            // Insert current between prev and prev.next
+            current.next = prev.next;
+            prev.next = current;
+            
+            // Move to next node
+            current = nextNode;
+        }
+        
+        return dummy.next;
+    }
+}
