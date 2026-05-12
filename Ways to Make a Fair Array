@@ -1,0 +1,68 @@
+Ways to Make a Fair Array
+
+
+
+
+class Solution {
+    public int waysToMakeFair(int[] nums) {
+        int n = nums.length;
+        int ways = 0;
+        
+        // Calculate total sums for odd and even indices
+        int totalOdd = 0;
+        int totalEven = 0;
+        
+        for (int i = 0; i < n; i++) {
+            if (i % 2 == 0) {
+                totalEven += nums[i];
+            } else {
+                totalOdd += nums[i];
+            }
+        }
+        
+        // Track prefix sums as we iterate
+        int prefixEven = 0;
+        int prefixOdd = 0;
+        
+        for (int i = 0; i < n; i++) {
+            // Current element's contribution to total
+            int current = nums[i];
+            
+            // When we remove index i, the parity of all subsequent indices flips
+            // Even indices become odd, odd indices become even
+            
+            // Calculate sums after removal
+            int suffixEven, suffixOdd;
+            
+            if (i % 2 == 0) {
+                // Current index is even
+                // Remove from totalEven
+                suffixEven = totalEven - prefixEven - current;
+                suffixOdd = totalOdd - prefixOdd;
+            } else {
+                // Current index is odd
+                // Remove from totalOdd
+                suffixEven = totalEven - prefixEven;
+                suffixOdd = totalOdd - prefixOdd - current;
+            }
+            
+            // After removal, previous prefix stays same
+            // Suffix parities are flipped
+            int newEvenSum = prefixEven + suffixOdd;
+            int newOddSum = prefixOdd + suffixEven;
+            
+            if (newEvenSum == newOddSum) {
+                ways++;
+            }
+            
+            // Update prefix sums
+            if (i % 2 == 0) {
+                prefixEven += current;
+            } else {
+                prefixOdd += current;
+            }
+        }
+        
+        return ways;
+    }
+}
