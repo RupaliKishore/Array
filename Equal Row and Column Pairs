@@ -1,0 +1,45 @@
+Equal Row and Column Pairs
+
+
+
+import java.util.*;
+
+class Solution {
+    public int equalPairs(int[][] grid) {
+        int n = grid.length;
+        int count = 0;
+        
+        // Store rows as lists for comparison
+        List<List<Integer>> rows = new ArrayList<>();
+        List<List<Integer>> columns = new ArrayList<>();
+        
+        // Extract all rows
+        for (int i = 0; i < n; i++) {
+            List<Integer> row = new ArrayList<>();
+            for (int j = 0; j < n; j++) {
+                row.add(grid[i][j]);
+            }
+            rows.add(row);
+        }
+        
+        // Extract all columns
+        for (int j = 0; j < n; j++) {
+            List<Integer> col = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                col.add(grid[i][j]);
+            }
+            columns.add(col);
+        }
+        
+        // Compare each row with each column
+        for (List<Integer> row : rows) {
+            for (List<Integer> col : columns) {
+                if (row.equals(col)) {
+                    count++;
+                }
+            }
+        }
+        
+        return count;
+    }
+}
