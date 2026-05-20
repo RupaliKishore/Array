@@ -1,0 +1,46 @@
+Asteroid Collision
+
+
+import java.util.*;
+
+class Solution {
+    public int[] asteroidCollision(int[] asteroids) {
+        Stack<Integer> stack = new Stack<>();
+        
+        for (int asteroid : asteroids) {
+            boolean exploded = false;
+            
+            // Check for collisions: current moving left, stack top moving right
+            while (!stack.isEmpty() && asteroid < 0 && stack.peek() > 0) {
+                int top = stack.peek();
+                
+                if (top > Math.abs(asteroid)) {
+                    // Current asteroid explodes
+                    exploded = true;
+                    break;
+                } else if (top == Math.abs(asteroid)) {
+                    // Both explode
+                    stack.pop();
+                    exploded = true;
+                    break;
+                } else {
+                    // Top asteroid explodes
+                    stack.pop();
+                    // Continue checking with new top
+                }
+            }
+            
+            // If current asteroid didn't explode, push it
+            if (!exploded) {
+                stack.push(asteroid);
+            }
+        }
+        
+        // Convert stack to array
+        int[] result = new int[stack.size()];
+        for (int i = result.length - 1; i >= 0; i--) {
+            result[i] = stack.pop();
+        }
+        return result;
+    }
+}
