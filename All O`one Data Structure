@@ -1,0 +1,131 @@
+All O`one Data Structure
+
+
+
+class AllOne {
+    // Node in doubly linked list
+    private class Node {
+        int count;
+        Set<String> keys;
+        Node prev;
+        Node next;
+        
+        Node(int count) {
+            this.count = count;
+            this.keys = new HashSet<>();
+        }
+    }
+    
+    private Map<String, Node> keyToNode;
+    private Node head;  // dummy head
+    private Node tail;  // dummy tail
+    
+    public AllOne() {
+        keyToNode = new HashMap<>();
+        head = new Node(0);
+        tail = new Node(0);
+        head.next = tail;
+        tail.prev = head;
+    }
+    
+    public void inc(String key) {
+        if (!keyToNode.containsKey(key)) {
+            // Key doesn't exist, add with count 1
+            if (head.next == tail || head.next.count != 1) {
+                // Create new node with count 1
+                Node newNode = new Node(1);
+                insertAfter(head, newNode);
+                newNode.keys.add(key);
+                keyToNode.put(key, newNode);
+            } else {
+                head.next.keys.add(key);
+                keyToNode.put(key, head.next);
+            }
+        } else {
+            // Key exists, move it to next count
+            Node currNode = keyToNode.get(key);
+            int newCount = currNode.count + 1;
+            
+            // Check if next node exists and has newCount
+            if (currNode.next == tail || currNode.next.count != newCount) {
+                // Create new node
+                Node newNode = new Node(newCount);
+                insertAfter(currNode, newNode);
+                newNode.keys.add(key);
+                keyToNode.put(key, newNode);
+            } else {
+                currNode.next.keys.add(key);
+                keyToNode.put(key, currNode.next);
+            }
+            
+            // Remove key from old node
+            currNode.keys.remove(key);
+            if (currNode.keys.isEmpty()) {
+                removeNode(currNode);
+            }
+        }
+    }
+    
+    public void dec(String key) {
+        if (!keyToNode.containsKey(key)) {
+            return;
+        }
+        
+        Node currNode = keyToNode.get(key);
+        int newCount = currNode.count - 1;
+        
+        if (newCount == 0) {
+            // Remove the key completely
+            keyToNode.remove(key);
+            currNode.keys.remove(key);
+            if (currNode.keys.isEmpty()) {
+                removeNode(currNode);
+            }
+        } else {
+            // Move to node with newCount
+            if (currNode.prev == head || currNode.prev.count != newCount) {
+                // Create new node
+                Node newNode = new Node(newCount);
+                insertAfter(currNode.prev, newNode);
+                newNode.keys.add(key);
+                keyToNode.put(key, newNode);
+            } else {
+                currNode.prev.keys.add(key);
+                keyToNode.put(key, currNode.prev);
+            }
+            
+            // Remove from old node
+            currNode.keys.remove(key);
+            if (currNode.keys.isEmpty()) {
+                removeNode(currNode);
+            }
+        }
+    }
+    
+    public String getMaxKey() {
+        if (tail.prev == head) {
+            return "";
+        }
+        return tail.prev.keys.iterator().next();
+    }
+    
+    public String getMinKey() {
+        if (head.next == tail) {
+            return "";
+        }
+        return head.next.keys.iterator().next();
+    }
+    
+    // Helper methods
+    private void insertAfter(Node prevNode, Node newNode) {
+        newNode.prev = prevNode;
+        newNode.next = prevNode.next;
+        prevNode.next.prev = newNode;
+        prevNode.next = newNode;
+    }
+    
+    private void removeNode(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+}
