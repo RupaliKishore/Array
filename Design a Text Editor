@@ -1,0 +1,71 @@
+Design a Text Editor
+
+
+class TextEditor {
+    private Deque<Character> left;   // Characters to the left of cursor
+    private Deque<Character> right;  // Characters to the right of cursor
+    
+    public TextEditor() {
+        left = new ArrayDeque<>();
+        right = new ArrayDeque<>();
+    }
+    
+    public void addText(String text) {
+        // Add each character to the left stack (cursor moves right automatically)
+        for (char c : text.toCharArray()) {
+            left.push(c);
+        }
+    }
+    
+    public int deleteText(int k) {
+        int deleted = 0;
+        // Delete up to k characters from left stack
+        while (k > 0 && !left.isEmpty()) {
+            left.pop();
+            deleted++;
+            k--;
+        }
+        return deleted;
+    }
+    
+    public String cursorLeft(int k) {
+        // Move cursor left: move characters from left to right
+        while (k > 0 && !left.isEmpty()) {
+            right.push(left.pop());
+            k--;
+        }
+        return getLeftString();
+    }
+    
+    public String cursorRight(int k) {
+        // Move cursor right: move characters from right to left
+        while (k > 0 && !right.isEmpty()) {
+            left.push(right.pop());
+            k--;
+        }
+        return getLeftString();
+    }
+    
+    private String getLeftString() {
+        // Get up to 10 characters to the left of cursor
+        StringBuilder sb = new StringBuilder();
+        Deque<Character> temp = new ArrayDeque<>();
+        int count = 0;
+        
+        // Collect up to 10 characters from left stack (from top to bottom)
+        while (count < 10 && !left.isEmpty()) {
+            char c = left.pop();
+            temp.push(c);
+            count++;
+        }
+        
+        // Restore left stack and build result
+        while (!temp.isEmpty()) {
+            char c = temp.pop();
+            sb.append(c);
+            left.push(c);
+        }
+        
+        return sb.toString();
+    }
+}
