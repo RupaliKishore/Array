@@ -1,0 +1,42 @@
+Design Browser History
+
+
+class BrowserHistory {
+    private Stack<String> backStack;
+    private Stack<String> forwardStack;
+    private String current;
+    
+    public BrowserHistory(String homepage) {
+        backStack = new Stack<>();
+        forwardStack = new Stack<>();
+        current = homepage;
+    }
+    
+    public void visit(String url) {
+        // Push current to backStack before visiting new URL
+        backStack.push(current);
+        current = url;
+        // Clear forward stack because we can't go forward to old pages
+        forwardStack.clear();
+    }
+    
+    public String back(int steps) {
+        // Move back up to steps times
+        while (steps > 0 && !backStack.isEmpty()) {
+            forwardStack.push(current);
+            current = backStack.pop();
+            steps--;
+        }
+        return current;
+    }
+    
+    public String forward(int steps) {
+        // Move forward up to steps times
+        while (steps > 0 && !forwardStack.isEmpty()) {
+            backStack.push(current);
+            current = forwardStack.pop();
+            steps--;
+        }
+        return current;
+    }
+}
