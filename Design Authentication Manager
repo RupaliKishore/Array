@@ -1,0 +1,46 @@
+Design Authentication Manager
+
+
+
+
+
+class AuthenticationManager {
+    private int timeToLive;
+    private Map<String, Integer> tokens;  // tokenId -> expiration time
+    
+    public AuthenticationManager(int timeToLive) {
+        this.timeToLive = timeToLive;
+        this.tokens = new HashMap<>();
+    }
+    
+    public void generate(String tokenId, int currentTime) {
+        // Generate new token with expiration = currentTime + timeToLive
+        tokens.put(tokenId, currentTime + timeToLive);
+    }
+    
+    public void renew(String tokenId, int currentTime) {
+        // Only renew if token exists and hasn't expired
+        if (tokens.containsKey(tokenId)) {
+            int expirationTime = tokens.get(tokenId);
+            if (expirationTime > currentTime) {
+                // Token is still valid, renew it
+                tokens.put(tokenId, currentTime + timeToLive);
+            }
+        }
+    }
+    
+    public int countUnexpiredTokens(int currentTime) {
+        int count = 0;
+        // Check all tokens and remove expired ones (lazy cleanup)
+        Iterator<Map.Entry<String, Integer>> iterator = tokens.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Integer> entry = iterator.next();
+            if (entry.getValue() <= currentTime) {
+                iterator.remove();  // Remove expired token
+            } else {
+                count++;
+            }
+        }
+        return count;
+    }
+}
