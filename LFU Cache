@@ -1,0 +1,138 @@
+LFU Cache
+
+
+
+class LFUCache {
+    
+    // Node in the doubly linked list
+    private class Node {
+        int key;
+        int value;
+        int freq;
+        Node prev;
+        Node next;
+        
+        Node(int key, int value) {
+            this.key = key;
+            this.value = value;
+            this.freq = 1;  // Initially frequency is 1
+        }
+    }
+    
+    // Doubly linked list with head and tail
+    private class DoublyLinkedList {
+        Node head;
+        Node tail;
+        int size;
+        
+        DoublyLinkedList() {
+            head = new Node(-1, -1);
+            tail = new Node(-1, -1);
+            head.next = tail;
+            tail.prev = head;
+            size = 0;
+        }
+        
+        void addToFront(Node node) {
+            node.next = head.next;
+            node.prev = head;
+            head.next.prev = node;
+            head.next = node;
+            size++;
+        }
+        
+        void removeNode(Node node) {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+            size--;
+        }
+        
+        Node removeLast() {
+            if (size == 0) return null;
+            Node last = tail.prev;
+            removeNode(last);
+            return last;
+        }
+        
+        boolean isEmpty() {
+            return size == 0;
+        }
+    }
+    
+    // Core data structures
+    private Map<Integer, Node> keyToNode;      // key -> Node
+    private Map<Integer, DoublyLinkedList> freqToList;  // frequency -> DLL
+    private int capacity;
+    private int minFreq;  // Current minimum frequency in cache
+    private int size;
+    
+    public LFUCache(int capacity) {
+        this.capacity = capacity;
+        this.size = 0;
+        this.minFreq = 0;
+        keyToNode = new HashMap<>();
+        freqToList = new HashMap<>();
+    }
+    
+    public int get(int key) {
+        if (capacity == 0) return -1;
+        
+        if (!keyToNode.containsKey(key)) {
+            return -1;
+        }
+        
+        Node node = keyToNode.get(key);
+        updateFrequency(node);
+        return node.value;
+    }
+    
+    public void put(int key, int value) {
+        if (capacity == 0) return;
+        
+        if (keyToNode.containsKey(key)) {
+            // Update existing key
+            Node node = keyToNode.get(key);
+            node.value = value;
+            updateFrequency(node);
+        } else {
+            // New key
+            if (size >= capacity) {
+                // Evict least frequent, least recent key
+                DoublyLinkedList minFreqList = freqToList.get(minFreq);
+                Node toEvict = minFreqList.removeLast();
+                keyToNode.remove(toEvict.key);
+                size--;
+            }
+            
+            // Add new node with frequency 1
+            Node newNode = new Node(key, value);
+            keyToNode.put(key, newNode);
+            
+            // Add to frequency 1 list
+            freqToList.computeIfAbsent(1, k -> new DoublyLinkedList()).addToFront(newNode);
+            
+            minFreq = 1;  // Reset min frequency to 1
+            size++;
+        }
+    }
+    
+    // Update node's frequency when accessed
+    private void updateFrequency(Node node) {
+        int oldFreq = node.freq;
+        DoublyLinkedList oldList = freqToList.get(oldFreq);
+        
+        // Remove from old frequency list
+        oldList.removeNode(node);
+        
+        // If old list becomes empty and it was the min frequency, increment minFreq
+        if (oldList.isEmpty() && oldFreq == minFreq) {
+            minFreq++;
+        }
+        
+        // Increase frequency
+        node.freq++;
+        
+        // Add to new frequency list
+        freqToList.computeIfAbsent(node.freq, k -> new DoublyLinkedList()).addToFront(node);
+    }
+}
