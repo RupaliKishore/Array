@@ -1,0 +1,42 @@
+Arithmetic Slices II - Subsequence
+
+
+
+class Solution {
+    public int numberOfArithmeticSlices(int[] nums) {
+        int n = nums.length;
+        int result = 0;
+        
+        // dp[i] = map of difference -> count of arithmetic subsequences ending at i
+        Map<Integer, Integer>[] dp = new HashMap[n];
+        
+        for (int i = 0; i < n; i++) {
+            dp[i] = new HashMap<>();
+            
+            for (int j = 0; j < i; j++) {
+                long diff = (long) nums[i] - (long) nums[j];
+                
+                // Check for overflow
+                if (diff < Integer.MIN_VALUE || diff > Integer.MAX_VALUE) {
+                    continue;
+                }
+                
+                int d = (int) diff;
+                
+                // Count of subsequences ending at j with difference d
+                int countAtJ = dp[j].getOrDefault(d, 0);
+                
+                // Count of subsequences ending at i with difference d
+                int countAtI = dp[i].getOrDefault(d, 0);
+                
+                // Add all subsequences that end at j and append nums[i]
+                dp[i].put(d, countAtI + countAtJ + 1);
+                
+                // Add to result: all subsequences of length >= 3
+                result += countAtJ;
+            }
+        }
+        
+        return result;
+    }
+}
