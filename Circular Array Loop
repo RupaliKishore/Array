@@ -1,0 +1,65 @@
+Circular Array Loop
+
+
+
+class Solution {
+    public boolean circularArrayLoop(int[] nums) {
+        int n = nums.length;
+        boolean[] visited = new boolean[n];
+        
+        for (int i = 0; i < n; i++) {
+            if (visited[i]) continue;
+            
+            // Check for cycle starting at i
+            int slow = i;
+            int fast = i;
+            boolean isForward = nums[i] > 0; // Direction of potential cycle
+            
+            while (true) {
+                // Move slow one step
+                slow = getNext(nums, slow, isForward);
+                if (slow == -1) break;
+                
+                // Move fast two steps
+                fast = getNext(nums, fast, isForward);
+                if (fast == -1) break;
+                fast = getNext(nums, fast, isForward);
+                if (fast == -1) break;
+                
+                if (slow == fast) {
+                    // Found a cycle, check if length > 1
+                    if (slow == getNext(nums, slow, isForward)) {
+                        break; // Cycle length is 1, invalid
+                    }
+                    return true;
+                }
+            }
+            
+            // Mark all visited nodes in this path
+            int curr = i;
+            while (curr != -1 && !visited[curr]) {
+                visited[curr] = true;
+                curr = getNext(nums, curr, isForward);
+            }
+        }
+        
+        return false;
+    }
+    
+    private int getNext(int[] nums, int i, boolean isForward) {
+        boolean direction = nums[i] > 0;
+        if (direction != isForward) {
+            return -1; // Direction changed
+        }
+        
+        int n = nums.length;
+        int next = (i + nums[i]) % n;
+        if (next < 0) next += n;
+        
+        if (next == i) {
+            return -1; // Self-loop (length 1)
+        }
+        
+        return next;
+    }
+}
