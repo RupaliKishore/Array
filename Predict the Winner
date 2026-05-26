@@ -1,0 +1,39 @@
+Predict the Winner
+
+
+
+class Solution {
+    public boolean predictTheWinner(int[] nums) {
+        int n = nums.length;
+        Integer[][] memo = new Integer[n][n];
+        int totalScore = getTotalScore(nums, 0, n - 1, memo);
+        int player1Score = totalScore;
+        int player2Score = getTotalSum(nums) - player1Score;
+        return player1Score >= player2Score;
+    }
+    
+    private int getTotalScore(int[] nums, int left, int right, Integer[][] memo) {
+        if (left > right) return 0;
+        if (memo[left][right] != null) return memo[left][right];
+        
+        // Player picks left or right, then opponent plays optimally
+        int pickLeft = nums[left] + Math.min(
+            getTotalScore(nums, left + 2, right, memo),
+            getTotalScore(nums, left + 1, right - 1, memo)
+        );
+        
+        int pickRight = nums[right] + Math.min(
+            getTotalScore(nums, left + 1, right - 1, memo),
+            getTotalScore(nums, left, right - 2, memo)
+        );
+        
+        memo[left][right] = Math.max(pickLeft, pickRight);
+        return memo[left][right];
+    }
+    
+    private int getTotalSum(int[] nums) {
+        int sum = 0;
+        for (int num : nums) sum += num;
+        return sum;
+    }
+}
