@@ -1,0 +1,56 @@
+ Random Point in Non-overlapping Rectangles
+
+
+
+class Solution {
+    private int[][] rects;
+    private int[] prefixAreas;
+    private int totalArea;
+    private Random random;
+    
+    public Solution(int[][] rects) {
+        this.rects = rects;
+        this.random = new Random();
+        this.prefixAreas = new int[rects.length];
+        
+        // Calculate prefix sums of areas
+        for (int i = 0; i < rects.length; i++) {
+            int[] rect = rects[i];
+            int width = rect[2] - rect[0] + 1;  // +1 because inclusive
+            int height = rect[3] - rect[1] + 1;
+            int area = width * height;
+            
+            totalArea += area;
+            prefixAreas[i] = totalArea;
+        }
+    }
+    
+    public int[] pick() {
+        // Step 1: Pick a random rectangle weighted by area
+        int target = random.nextInt(totalArea) + 1; // 1 to totalArea
+        int rectIndex = binarySearch(prefixAreas, target);
+        
+        // Step 2: Pick a random point within the selected rectangle
+        int[] rect = rects[rectIndex];
+        int x = rect[0] + random.nextInt(rect[2] - rect[0] + 1);
+        int y = rect[1] + random.nextInt(rect[3] - rect[1] + 1);
+        
+        return new int[]{x, y};
+    }
+    
+    private int binarySearch(int[] prefixAreas, int target) {
+        int left = 0;
+        int right = prefixAreas.length - 1;
+        
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (prefixAreas[mid] < target) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        
+        return left;
+    }
+}
