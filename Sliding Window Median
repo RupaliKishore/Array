@@ -1,0 +1,51 @@
+Sliding Window Median
+
+
+
+class Solution {
+    public double[] medianSlidingWindow(int[] nums, int k) {
+        int n = nums.length;
+        double[] result = new double[n - k + 1];
+        
+        PriorityQueue<Integer> left = new PriorityQueue<>((a, b) -> Integer.compare(b, a));
+        PriorityQueue<Integer> right = new PriorityQueue<>();
+        
+        for (int i = 0; i < n; i++) {
+            // Add new element
+            if (left.isEmpty() || nums[i] <= left.peek()) {
+                left.offer(nums[i]);
+            } else {
+                right.offer(nums[i]);
+            }
+            
+            // Remove element leaving window
+            if (i >= k) {
+                int removed = nums[i - k];
+                if (removed <= left.peek()) {
+                    left.remove(removed);
+                } else {
+                    right.remove(removed);
+                }
+            }
+            
+            // Balance heaps
+            while (left.size() > right.size() + 1) {
+                right.offer(left.poll());
+            }
+            while (right.size() > left.size()) {
+                left.offer(right.poll());
+            }
+            
+            // Get median
+            if (i >= k - 1) {
+                if (k % 2 == 1) {
+                    result[i - k + 1] = left.peek();
+                } else {
+                    result[i - k + 1] = ((double) left.peek() + right.peek()) / 2.0;
+                }
+            }
+        }
+        
+        return result;
+    }
+}
