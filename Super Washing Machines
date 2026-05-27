@@ -1,0 +1,39 @@
+Super Washing Machines
+
+
+
+class Solution {
+    public int findMinMoves(int[] machines) {
+        int n = machines.length;
+        
+        // Calculate total dresses
+        int total = 0;
+        for (int machine : machines) {
+            total += machine;
+        }
+        
+        // If total dresses not divisible by n, impossible
+        if (total % n != 0) {
+            return -1;
+        }
+        
+        int target = total / n; // Each machine should have this many
+        int result = 0;
+        int balance = 0; // Running balance of dresses needed
+        
+        for (int dresses : machines) {
+            // Calculate difference from target
+            int diff = dresses - target;
+            
+            // Update running balance
+            balance += diff;
+            
+            // The moves needed at this point is max of:
+            // 1. Absolute balance (dresses that need to pass through this point)
+            // 2. Current machine's excess/deficit (dresses moving directly from/to this machine)
+            result = Math.max(result, Math.max(Math.abs(balance), diff));
+        }
+        
+        return result;
+    }
+}
