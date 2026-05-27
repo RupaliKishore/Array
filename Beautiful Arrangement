@@ -1,0 +1,28 @@
+Beautiful Arrangement
+
+
+
+class Solution {
+    private int count = 0;
+    
+    public int countArrangement(int n) {
+        boolean[] visited = new boolean[n + 1]; // Track used numbers (1 to n)
+        backtrack(n, 1, visited);
+        return count;
+    }
+    
+    private void backtrack(int n, int position, boolean[] visited) {
+        if (position > n) {
+            count++;
+            return;
+        }
+        
+        for (int num = 1; num <= n; num++) {
+            if (!visited[num] && (num % position == 0 || position % num == 0)) {
+                visited[num] = true;
+                backtrack(n, position + 1, visited);
+                visited[num] = false;
+            }
+        }
+    }
+}
