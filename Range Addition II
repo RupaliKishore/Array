@@ -1,0 +1,28 @@
+Range Addition II
+
+
+
+
+
+class Solution {
+
+    public int maxCount(int m, int n, int[][] ops) {
+
+        // If no operations, entire matrix is unchanged
+        if (ops == null || ops.length == 0) {
+            return m * n;
+        }
+
+        // We look for the overlapping smallest area
+        int minRow = m;
+        int minCol = n;
+
+        for (int[] op : ops) {
+            minRow = Math.min(minRow, op[0]);
+            minCol = Math.min(minCol, op[1]);
+        }
+
+        // Result is intersection area
+        return minRow * minCol;
+    }
+}
