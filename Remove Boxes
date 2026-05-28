@@ -1,0 +1,57 @@
+Remove Boxes
+
+
+
+
+class Solution {
+
+    private int[][][] dp;
+
+    public int removeBoxes(int[] boxes) {
+
+        int n = boxes.length;
+        dp = new int[n][n][n];
+
+        return solve(boxes, 0, n - 1, 0);
+    }
+
+    private int solve(int[] boxes, int left, int right, int count) {
+
+        if (left > right) {
+            return 0;
+        }
+
+        // Merge consecutive same-colored boxes
+        while (left < right && boxes[left] == boxes[left + 1]) {
+            left++;
+            count++;
+        }
+
+        // Memoized result
+        if (dp[left][right][count] != 0) {
+            return dp[left][right][count];
+        }
+
+        // Remove current group directly
+        int result =
+                (count + 1) * (count + 1)
+                + solve(boxes, left + 1, right, 0);
+
+        // Try merging with same-colored boxes later
+        for (int i = left + 1; i <= right; i++) {
+
+            if (boxes[i] == boxes[left]) {
+
+                result = Math.max(
+                        result,
+                        solve(boxes, left + 1, i - 1, 0)
+                        + solve(boxes, i, right, count + 1)
+                );
+            }
+        }
+
+        dp[left][right][count] = result;
+
+        return result;
+    }
+}
