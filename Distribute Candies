@@ -1,0 +1,23 @@
+Distribute Candies
+
+
+
+
+
+import java.util.*;
+
+class Solution {
+
+    public int distributeCandies(int[] candyType) {
+
+        Set<Integer> uniqueCandies = new HashSet<>();
+
+        // Count unique candy types
+        for (int candy : candyType) {
+            uniqueCandies.add(candy);
+        }
+
+        // Sister can eat only n/2 candies
+        return Math.min(uniqueCandies.size(), candyType.length / 2);
+    }
+}
