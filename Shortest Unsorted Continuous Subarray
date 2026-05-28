@@ -1,0 +1,39 @@
+Shortest Unsorted Continuous Subarray
+
+
+
+
+
+
+import java.util.*;
+
+class Solution {
+
+    public int findUnsortedSubarray(int[] nums) {
+
+        int n = nums.length;
+
+        int[] sorted = nums.clone();
+        Arrays.sort(sorted);
+
+        int left = 0;
+        int right = n - 1;
+
+        // Find first mismatch from left
+        while (left < n && nums[left] == sorted[left]) {
+            left++;
+        }
+
+        // Array is already sorted
+        if (left == n) {
+            return 0;
+        }
+
+        // Find first mismatch from right
+        while (nums[right] == sorted[right]) {
+            right--;
+        }
+
+        return right - left + 1;
+    }
+}
