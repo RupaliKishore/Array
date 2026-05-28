@@ -1,0 +1,36 @@
+ Array Nesting
+
+
+
+
+class Solution {
+
+    public int arrayNesting(int[] nums) {
+
+        int n = nums.length;
+        boolean[] visited = new boolean[n];
+
+        int maxLength = 0;
+
+        for (int i = 0; i < n; i++) {
+
+            if (!visited[i]) {
+
+                int length = 0;
+                int current = i;
+
+                // Traverse the nesting sequence
+                while (!visited[current]) {
+
+                    visited[current] = true;
+                    current = nums[current];
+                    length++;
+                }
+
+                maxLength = Math.max(maxLength, length);
+            }
+        }
+
+        return maxLength;
+    }
+}
