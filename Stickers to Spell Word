@@ -1,0 +1,58 @@
+Stickers to Spell Word
+
+
+
+
+class Solution {
+    public int minStickers(String[] stickers, String target) {
+        int m = target.length();
+        int targetMask = (1 << m) - 1;
+        
+        // Preprocess stickers
+        int[][] stickerCount = new int[stickers.length][26];
+        for (int i = 0; i < stickers.length; i++) {
+            for (char c : stickers[i].toCharArray()) {
+                stickerCount[i][c - 'a']++;
+            }
+        }
+        
+        // BFS: state is bitmask of covered positions
+        int[] dist = new int[1 << m];
+        Arrays.fill(dist, -1);
+        dist[0] = 0;
+        
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(0);
+        
+        while (!queue.isEmpty()) {
+            int mask = queue.poll();
+            
+            // Try each sticker
+            for (int[] sticker : stickerCount) {
+                int newMask = mask;
+                int[] freq = sticker.clone();
+                
+                // Apply sticker to cover uncovered positions
+                for (int i = 0; i < m; i++) {
+                    if ((newMask & (1 << i)) == 0) {
+                        char c = target.charAt(i);
+                        if (freq[c - 'a'] > 0) {
+                            freq[c - 'a']--;
+                            newMask |= (1 << i);
+                        }
+                    }
+                }
+                
+                if (dist[newMask] == -1) {
+                    dist[newMask] = dist[mask] + 1;
+                    if (newMask == targetMask) {
+                        return dist[newMask];
+                    }
+                    queue.offer(newMask);
+                }
+            }
+        }
+        
+        return -1;
+    }
+}
