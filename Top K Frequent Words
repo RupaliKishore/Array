@@ -1,0 +1,24 @@
+Top K Frequent Words
+
+
+
+class Solution {
+    public List<String> topKFrequent(String[] words, int k) {
+        // Count frequencies
+        Map<String, Integer> freq = new HashMap<>();
+        for (String word : words) {
+            freq.put(word, freq.getOrDefault(word, 0) + 1);
+        }
+        
+        // Sort by frequency (descending), then by word (ascending)
+        List<String> result = new ArrayList<>(freq.keySet());
+        result.sort((a, b) -> {
+            if (freq.get(a).equals(freq.get(b))) {
+                return a.compareTo(b); // Lexicographical order
+            }
+            return freq.get(b) - freq.get(a); // Higher frequency first
+        });
+        
+        return result.subList(0, k);
+    }
+}
