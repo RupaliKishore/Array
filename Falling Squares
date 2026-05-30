@@ -1,0 +1,34 @@
+Falling Squares
+
+
+
+class Solution {
+    public List<Integer> fallingSquares(int[][] positions) {
+        List<Integer> result = new ArrayList<>();
+        // Store intervals as [start, end, height]
+        List<int[]> intervals = new ArrayList<>();
+        
+        int maxHeight = 0;
+        
+        for (int[] pos : positions) {
+            int left = pos[0];
+            int right = left + pos[1];
+            int sideLength = pos[1];
+            
+            // Find the maximum height this square will land on
+            int baseHeight = 0;
+            for (int[] interval : intervals) {
+                if (interval[0] < right && interval[1] > left) {
+                    baseHeight = Math.max(baseHeight, interval[2]);
+                }
+            }
+            
+            int newHeight = baseHeight + sideLength;
+            intervals.add(new int[]{left, right, newHeight});
+            maxHeight = Math.max(maxHeight, newHeight);
+            result.add(maxHeight);
+        }
+        
+        return result;
+    }
+}
