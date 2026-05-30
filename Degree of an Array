@@ -1,0 +1,39 @@
+Degree of an Array
+
+
+
+class Solution {
+    public int findShortestSubArray(int[] nums) {
+        // Map: num -> [count, firstIndex, lastIndex]
+        Map<Integer, int[]> map = new HashMap<>();
+        
+        for (int i = 0; i < nums.length; i++) {
+            if (!map.containsKey(nums[i])) {
+                map.put(nums[i], new int[]{1, i, i});
+            } else {
+                int[] info = map.get(nums[i]);
+                info[0]++; // increment count
+                info[2] = i; // update last index
+            }
+        }
+        
+        int degree = 0;
+        int minLength = Integer.MAX_VALUE;
+        
+        for (int[] info : map.values()) {
+            int count = info[0];
+            int first = info[1];
+            int last = info[2];
+            int length = last - first + 1;
+            
+            if (count > degree) {
+                degree = count;
+                minLength = length;
+            } else if (count == degree) {
+                minLength = Math.min(minLength, length);
+            }
+        }
+        
+        return minLength;
+    }
+}
