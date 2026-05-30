@@ -1,0 +1,52 @@
+Split Array into Consecutive Subsequences
+
+
+
+import java.util.*;
+
+class Solution {
+    public boolean isPossible(int[] nums) {
+        // Frequency map: count of each number
+        Map<Integer, Integer> freq = new HashMap<>();
+        // Map to track subsequences ending with a particular number
+        Map<Integer, Integer> need = new HashMap<>();
+        
+        // Count frequency of each number
+        for (int num : nums) {
+            freq.put(num, freq.getOrDefault(num, 0) + 1);
+        }
+        
+        // Try to form subsequences
+        for (int num : nums) {
+            // If this number is already used, skip
+            if (freq.get(num) == 0) {
+                continue;
+            }
+            
+            // Option 1: Extend an existing subsequence
+            if (need.getOrDefault(num, 0) > 0) {
+                // Use this number to extend subsequence ending with num-1
+                need.put(num, need.get(num) - 1);
+                need.put(num + 1, need.getOrDefault(num + 1, 0) + 1);
+                freq.put(num, freq.get(num) - 1);
+            }
+            // Option 2: Start a new subsequence of length 3
+            else if (freq.getOrDefault(num, 0) > 0 && 
+                     freq.getOrDefault(num + 1, 0) > 0 && 
+                     freq.getOrDefault(num + 2, 0) > 0) {
+                // Start new subsequence [num, num+1, num+2]
+                freq.put(num, freq.get(num) - 1);
+                freq.put(num + 1, freq.get(num + 1) - 1);
+                freq.put(num + 2, freq.get(num + 2) - 1);
+                // This subsequence ends at num+2
+                need.put(num + 3, need.getOrDefault(num + 3, 0) + 1);
+            }
+            // Cannot form subsequence
+            else {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
