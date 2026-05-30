@@ -1,0 +1,33 @@
+Employee Importance
+
+
+
+/*
+// Definition for Employee.
+class Employee {
+    public int id;
+    public int importance;
+    public List<Integer> subordinates;
+};
+*/
+
+class Solution {
+    Map<Integer, Employee> map = new HashMap<>();
+    
+    public int getImportance(List<Employee> employees, int id) {
+        // Build mapping from id to employee
+        for (Employee emp : employees) {
+            map.put(emp.id, emp);
+        }
+        return dfs(id);
+    }
+    
+    private int dfs(int id) {
+        Employee emp = map.get(id);
+        int total = emp.importance;
+        for (int subId : emp.subordinates) {
+            total += dfs(subId);
+        }
+        return total;
+    }
+}
