@@ -1,0 +1,33 @@
+Course Schedule III
+
+
+
+import java.util.*;
+
+public class Solution {
+    public int scheduleCourse(int[][] courses) {
+        // Sort courses by deadline (end day)
+        Arrays.sort(courses, (a, b) -> a[1] - b[1]);
+        
+        // Max heap to store durations of taken courses
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> b - a);
+        
+        int totalTime = 0;
+        
+        for (int[] course : courses) {
+            int duration = course[0];
+            int deadline = course[1];
+            
+            // Try to take this course
+            totalTime += duration;
+            maxHeap.offer(duration);
+            
+            // If we exceed the deadline, remove the longest course taken so far
+            if (totalTime > deadline) {
+                totalTime -= maxHeap.poll();
+            }
+        }
+        
+        return maxHeap.size();
+    }
+}
