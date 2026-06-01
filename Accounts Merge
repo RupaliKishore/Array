@@ -1,0 +1,99 @@
+Accounts Merge
+
+
+
+import java.util.*;
+
+class Solution {
+    public List<List<String>> accountsMerge(List<List<String>> accounts) {
+        // Map email to name
+        Map<String, String> emailToName = new HashMap<>();
+        // Map email to index in DSU
+        Map<String, Integer> emailToId = new HashMap<>();
+        
+        int emailCount = 0;
+        
+        // First pass: assign unique IDs to emails
+        for (List<String> account : accounts) {
+            String name = account.get(0);
+            for (int i = 1; i < account.size(); i++) {
+                String email = account.get(i);
+                emailToName.put(email, name);
+                if (!emailToId.containsKey(email)) {
+                    emailToId.put(email, emailCount++);
+                }
+            }
+        }
+        
+        // Initialize DSU
+        DSU dsu = new DSU(emailCount);
+        
+        // Union emails within the same account
+        for (List<String> account : accounts) {
+            int firstEmailId = emailToId.get(account.get(1));
+            for (int i = 2; i < account.size(); i++) {
+                int nextEmailId = emailToId.get(account.get(i));
+                dsu.union(firstEmailId, nextEmailId);
+            }
+        }
+        
+        // Group emails by their root
+        Map<Integer, List<String>> rootToEmails = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : emailToId.entrySet()) {
+            String email = entry.getKey();
+            int id = entry.getValue();
+            int root = dsu.find(id);
+            rootToEmails.computeIfAbsent(root, k -> new ArrayList<>()).add(email);
+        }
+        
+        // Build result
+        List<List<String>> result = new ArrayList<>();
+        for (List<String> emails : rootToEmails.values()) {
+            Collections.sort(emails);
+            List<String> account = new ArrayList<>();
+            account.add(emailToName.get(emails.get(0)));
+            account.addAll(emails);
+            result.add(account);
+        }
+        
+        return result;
+    }
+    
+    // Disjoint Set Union (Union-Find) implementation
+    class DSU {
+        int[] parent;
+        int[] rank;
+        
+        DSU(int n) {
+            parent = new int[n];
+            rank = new int[n];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+            }
+        }
+        
+        int find(int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]); // Path compression
+            }
+            return parent[x];
+        }
+        
+        void union(int x, int y) {
+            int rootX = find(x);
+            int rootY = find(y);
+            
+            if (rootX != rootY) {
+                // Union by rank
+                if (rank[rootX] < rank[rootY]) {
+                    parent[rootX] = rootY;
+                } else if (rank[rootX] > rank[rootY]) {
+                    parent[rootY] = rootX;
+                } else {
+                    parent[rootY] = rootX;
+                    rank[rootX]++;
+                }
+            }
+        }
+    }
+}
