@@ -1,0 +1,53 @@
+Remove Comments
+
+
+
+import java.util.*;
+
+class Solution {
+    public List<String> removeComments(String[] source) {
+        List<String> result = new ArrayList<>();
+        boolean inBlockComment = false;
+        StringBuilder currentLine = new StringBuilder();
+        
+        for (String line : source) {
+            int i = 0;
+            int n = line.length();
+            
+            while (i < n) {
+                if (!inBlockComment) {
+                    // Looking for start of comment
+                    if (i + 1 < n && line.charAt(i) == '/' && line.charAt(i + 1) == '/') {
+                        // Line comment: skip rest of line
+                        break;
+                    } else if (i + 1 < n && line.charAt(i) == '/' && line.charAt(i + 1) == '*') {
+                        // Start of block comment
+                        inBlockComment = true;
+                        i += 2;
+                    } else {
+                        // Regular code
+                        currentLine.append(line.charAt(i));
+                        i++;
+                    }
+                } else {
+                    // Inside block comment, looking for end
+                    if (i + 1 < n && line.charAt(i) == '*' && line.charAt(i + 1) == '/') {
+                        inBlockComment = false;
+                        i += 2;
+                    } else {
+                        i++;
+                    }
+                }
+            }
+            
+            // Add current line to result if we're not in a block comment
+            // and the line has some content
+            if (!inBlockComment && currentLine.length() > 0) {
+                result.add(currentLine.toString());
+                currentLine = new StringBuilder();
+            }
+        }
+        
+        return result;
+    }
+}
