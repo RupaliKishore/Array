@@ -1,0 +1,50 @@
+Shopping Offers
+
+
+
+import java.util.*;
+
+public class Solution {
+    public int shoppingOffers(List<Integer> price, List<List<Integer>> special, List<Integer> needs) {
+        Map<List<Integer>, Integer> memo = new HashMap<>();
+        return dfs(price, special, needs, memo);
+    }
+    
+    private int dfs(List<Integer> price, List<List<Integer>> special, 
+                    List<Integer> needs, Map<List<Integer>, Integer> memo) {
+        if (memo.containsKey(needs)) {
+            return memo.get(needs);
+        }
+        
+        // Option 1: Buy all items individually
+        int minCost = 0;
+        for (int i = 0; i < needs.size(); i++) {
+            minCost += needs.get(i) * price.get(i);
+        }
+        
+        // Option 2: Try each special offer
+        for (List<Integer> offer : special) {
+            List<Integer> newNeeds = new ArrayList<>();
+            boolean valid = true;
+            
+            // Check if offer can be applied
+            for (int i = 0; i < needs.size(); i++) {
+                int remaining = needs.get(i) - offer.get(i);
+                if (remaining < 0) {
+                    valid = false;
+                    break;
+                }
+                newNeeds.add(remaining);
+            }
+            
+            // Apply offer and recurse
+            if (valid) {
+                int cost = offer.get(offer.size() - 1) + dfs(price, special, newNeeds, memo);
+                minCost = Math.min(minCost, cost);
+            }
+        }
+        
+        memo.put(needs, minCost);
+        return minCost;
+    }
+}
