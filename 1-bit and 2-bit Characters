@@ -1,0 +1,23 @@
+1-bit and 2-bit Characters
+
+
+
+class Solution {
+    public boolean isOneBitCharacter(int[] bits) {
+        int i = 0;
+        int n = bits.length;
+        
+        while (i < n - 1) {
+            if (bits[i] == 1) {
+                // 2-bit character, skip next bit
+                i += 2;
+            } else {
+                // 1-bit character, move to next bit
+                i += 1;
+            }
+        }
+        
+        // If we landed exactly at last index, last character is 1-bit
+        return i == n - 1;
+    }
+}
