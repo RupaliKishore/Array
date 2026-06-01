@@ -1,0 +1,23 @@
+Best Time to Buy and Sell Stock with Transaction Fee
+
+
+
+class Solution {
+    public int maxProfit(int[] prices, int fee) {
+        if (prices == null || prices.length == 0) return 0;
+        
+        // cash: maximum profit with no stock in hand
+        // hold: maximum profit with one stock in hand
+        int cash = 0;
+        int hold = -prices[0];
+        
+        for (int i = 1; i < prices.length; i++) {
+            // Either keep previous cash, or sell the stock we're holding
+            cash = Math.max(cash, hold + prices[i] - fee);
+            // Either keep previous hold, or buy new stock
+            hold = Math.max(hold, cash - prices[i]);
+        }
+        
+        return cash;
+    }
+}
