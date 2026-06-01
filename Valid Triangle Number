@@ -1,0 +1,33 @@
+Valid Triangle Number
+
+
+
+import java.util.Arrays;
+
+public class Solution {
+    public int triangleNumber(int[] nums) {
+        if (nums == null || nums.length < 3) return 0;
+        
+        Arrays.sort(nums);
+        int count = 0;
+        int n = nums.length;
+        
+        // Fix the largest side (c)
+        for (int c = n - 1; c >= 2; c--) {
+            int a = 0;
+            int b = c - 1;
+            
+            while (a < b) {
+                if (nums[a] + nums[b] > nums[c]) {
+                    // If nums[a] + nums[b] > nums[c], then all elements between a and b also work
+                    count += (b - a);
+                    b--;
+                } else {
+                    a++;
+                }
+            }
+        }
+        
+        return count;
+    }
+}
