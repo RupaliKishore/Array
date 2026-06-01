@@ -1,0 +1,34 @@
+ Maximum Distance in Arrays
+
+
+
+
+import java.util.List;
+
+public class Solution {
+    public int maxDistance(List<List<Integer>> arrays) {
+        if (arrays == null || arrays.size() < 2) return 0;
+        
+        // Initialize with first array's min and max
+        int minVal = arrays.get(0).get(0);
+        int maxVal = arrays.get(0).get(arrays.get(0).size() - 1);
+        int maxDistance = 0;
+        
+        // Start from second array
+        for (int i = 1; i < arrays.size(); i++) {
+            List<Integer> current = arrays.get(i);
+            int currentMin = current.get(0);
+            int currentMax = current.get(current.size() - 1);
+            
+            // Calculate potential max distances using current array
+            maxDistance = Math.max(maxDistance, Math.abs(currentMax - minVal));
+            maxDistance = Math.max(maxDistance, Math.abs(maxVal - currentMin));
+            
+            // Update global min and max
+            minVal = Math.min(minVal, currentMin);
+            maxVal = Math.max(maxVal, currentMax);
+        }
+        
+        return maxDistance;
+    }
+}
