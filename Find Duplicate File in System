@@ -1,0 +1,43 @@
+ Find Duplicate File in System
+
+
+
+ import java.util.*;
+
+public class Solution {
+    public List<List<String>> findDuplicate(String[] paths) {
+        // Map: file content -> list of file paths
+        Map<String, List<String>> contentToPaths = new HashMap<>();
+        
+        for (String path : paths) {
+            String[] parts = path.split(" ");
+            String directory = parts[0];
+            
+            // Process each file in this directory
+            for (int i = 1; i < parts.length; i++) {
+                String fileInfo = parts[i];
+                
+                // Extract filename and content
+                int openParen = fileInfo.indexOf('(');
+                String filename = fileInfo.substring(0, openParen);
+                String content = fileInfo.substring(openParen + 1, fileInfo.length() - 1);
+                
+                // Build full path
+                String fullPath = directory + "/" + filename;
+                
+                // Group by content
+                contentToPaths.computeIfAbsent(content, k -> new ArrayList<>()).add(fullPath);
+            }
+        }
+        
+        // Collect only groups with duplicates (size > 1)
+        List<List<String>> result = new ArrayList<>();
+        for (List<String> pathsList : contentToPaths.values()) {
+            if (pathsList.size() > 1) {
+                result.add(pathsList);
+            }
+        }
+        
+        return result;
+    }
+}
