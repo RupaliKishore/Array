@@ -1,0 +1,49 @@
+Smallest Range Covering Elements from K Lists
+
+
+
+import java.util.*;
+
+public class Solution {
+    public int[] smallestRange(List<List<Integer>> nums) {
+        // Min heap: [value, listIndex, elementIndex]
+        PriorityQueue<int[]> minHeap = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        
+        int maxValue = Integer.MIN_VALUE;
+        int rangeStart = 0;
+        int rangeEnd = Integer.MAX_VALUE;
+        
+        // Initialize: add first element from each list
+        for (int i = 0; i < nums.size(); i++) {
+            int value = nums.get(i).get(0);
+            minHeap.offer(new int[]{value, i, 0});
+            maxValue = Math.max(maxValue, value);
+        }
+        
+        // Process elements
+        while (minHeap.size() == nums.size()) {
+            int[] current = minHeap.poll();
+            int minValue = current[0];
+            int listIdx = current[1];
+            int elemIdx = current[2];
+            
+            // Update range if we found a smaller one
+            if (maxValue - minValue < rangeEnd - rangeStart) {
+                rangeStart = minValue;
+                rangeEnd = maxValue;
+            }
+            
+            // Add next element from the same list
+            if (elemIdx + 1 < nums.get(listIdx).size()) {
+                int nextValue = nums.get(listIdx).get(elemIdx + 1);
+                minHeap.offer(new int[]{nextValue, listIdx, elemIdx + 1});
+                maxValue = Math.max(maxValue, nextValue);
+            } else {
+                // One list is exhausted - can't cover all lists anymore
+                break;
+            }
+        }
+        
+        return new int[]{rangeStart, rangeEnd};
+    }
+}
