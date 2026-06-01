@@ -1,0 +1,45 @@
+Random Pick with Blacklist
+
+
+
+import java.util.*;
+
+class Solution {
+    private Map<Integer, Integer> mapping;
+    private Random random;
+    private int validSize;
+    
+    public Solution(int n, int[] blacklist) {
+        mapping = new HashMap<>();
+        random = new Random();
+        
+        // Convert blacklist to set for O(1) lookup
+        Set<Integer> blackSet = new HashSet<>();
+        for (int b : blacklist) {
+            blackSet.add(b);
+        }
+        
+        // validSize is the number of allowed numbers
+        validSize = n - blacklist.length;
+        
+        // Map each blacklisted number in [0, validSize) to a white number in [validSize, n)
+        int last = n - 1;
+        for (int b : blacklist) {
+            // Only map blacklisted numbers that are in the first validSize range
+            if (b < validSize) {
+                // Find a white number from the end to map to
+                while (blackSet.contains(last)) {
+                    last--;
+                }
+                mapping.put(b, last);
+                last--;
+            }
+        }
+    }
+    
+    public int pick() {
+        int randomIndex = random.nextInt(validSize);
+        // If randomIndex is blacklisted, return its mapping, else return randomIndex
+        return mapping.getOrDefault(randomIndex, randomIndex);
+    }
+}
