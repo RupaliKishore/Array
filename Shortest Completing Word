@@ -1,0 +1,74 @@
+ Shortest Completing Word
+
+
+
+class Solution {
+    public String shortestCompletingWord(String licensePlate, String[] words) {
+        // Step 1: Count letters in license plate (case-insensitive)
+        int[] required = new int[26];
+        for (char c : licensePlate.toCharArray()) {
+            if (Character.isLetter(c)) {
+                required[Character.toLowerCase(c) - 'a']++;
+            }
+        }
+        
+        // Step 2: Find shortest completing word
+        String result = null;
+        
+        for (String word : words) {
+            // Skip if word is longer than current result
+            if (result != null && word.length() >= result.length()) {
+                continue;
+            }
+            
+            // Count letters in current word
+            int[] wordCount = new int[26];
+            for (char c : word.toCharArray()) {
+                wordCount[c - 'a']++;
+            }
+            
+            // Check if word contains all required letters
+            boolean isComplete = true;
+            for (int i = 0; i < 26; i++) {
+                if (wordCount[i] < required[i]) {
+                    isComplete = false;
+                    break;
+                }
+            }
+            
+            if (isComplete) {
+                result = word;
+            }
+        }
+        
+        return result != null ? result : "";
+    }
+    
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        
+        // Test case 1
+        String licensePlate1 = "1s3 PSt";
+        String[] words1 = {"step", "steps", "stripe", "stepple"};
+        System.out.println(sol.shortestCompletingWord(licensePlate1, words1));
+        // Output: "steps" (has s,t,e,p,s - includes s,t,p from license plate)
+        
+        // Test case 2
+        String licensePlate2 = "1s3 456";
+        String[] words2 = {"looks", "pest", "stew", "show"};
+        System.out.println(sol.shortestCompletingWord(licensePlate2, words2));
+        // Output: "pest" (has p,e,s,t)
+        
+        // Test case 3
+        String licensePlate3 = "GrC8950";
+        String[] words3 = {"according", "grc", "rcg", "algorithm"};
+        System.out.println(sol.shortestCompletingWord(licensePlate3, words3));
+        // Output: "rcg" (has r,c,g)
+        
+        // Test case 4 - multiple same letters
+        String licensePlate4 = "aAbBcC";
+        String[] words4 = {"abc", "aabbcc", "abcc", "aaabbbccc"};
+        System.out.println(sol.shortestCompletingWord(licensePlate4, words4));
+        // Output: "aabbcc" (needs 2 each of a,b,c)
+    }
+}
