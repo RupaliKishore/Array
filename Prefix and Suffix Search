@@ -1,0 +1,89 @@
+Prefix and Suffix Search
+
+
+
+class WordFilter {
+    class TrieNode {
+        TrieNode[] children = new TrieNode[26];
+        List<Integer> indices = new ArrayList<>();
+    }
+    
+    private TrieNode prefixTrie;
+    private TrieNode suffixTrie;
+    
+    public WordFilter(String[] words) {
+        prefixTrie = new TrieNode();
+        suffixTrie = new TrieNode();
+        
+        for (int idx = 0; idx < words.length; idx++) {
+            String word = words[idx];
+            
+            // Insert into prefix trie
+            TrieNode node = prefixTrie;
+            node.indices.add(idx);
+            for (char c : word.toCharArray()) {
+                int pos = c - 'a';
+                if (node.children[pos] == null) {
+                    node.children[pos] = new TrieNode();
+                }
+                node = node.children[pos];
+                node.indices.add(idx);
+            }
+            
+            // Insert into suffix trie (by reversing the word)
+            node = suffixTrie;
+            node.indices.add(idx);
+            for (int i = word.length() - 1; i >= 0; i--) {
+                int pos = word.charAt(i) - 'a';
+                if (node.children[pos] == null) {
+                    node.children[pos] = new TrieNode();
+                }
+                node = node.children[pos];
+                node.indices.add(idx);
+            }
+        }
+    }
+    
+    public int f(String prefix, String suffix) {
+        // Get all indices with given prefix
+        TrieNode node = prefixTrie;
+        for (char c : prefix.toCharArray()) {
+            int pos = c - 'a';
+            if (node.children[pos] == null) {
+                return -1;
+            }
+            node = node.children[pos];
+        }
+        List<Integer> prefixIndices = node.indices;
+        
+        // Get all indices with given suffix
+        node = suffixTrie;
+        for (int i = suffix.length() - 1; i >= 0; i--) {
+            int pos = suffix.charAt(i) - 'a';
+            if (node.children[pos] == null) {
+                return -1;
+            }
+            node = node.children[pos];
+        }
+        List<Integer> suffixIndices = node.indices;
+        
+        // Find largest common index (both lists are sorted in insertion order)
+        int i = prefixIndices.size() - 1;
+        int j = suffixIndices.size() - 1;
+        
+        while (i >= 0 && j >= 0) {
+            int pVal = prefixIndices.get(i);
+            int sVal = suffixIndices.get(j);
+            
+            if (pVal == sVal) {
+                return pVal;
+            } else if (pVal > sVal) {
+                i--;
+            } else {
+                j--;
+            }
+        }
+        
+        return -1;
+    }
+}
