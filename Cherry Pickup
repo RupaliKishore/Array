@@ -1,0 +1,113 @@
+Cherry Pickup
+
+
+
+class Solution {
+    public int cherryPickup(int[][] grid) {
+        int n = grid.length;
+        // dp[r1][c1][r2] = max cherries with person1 at (r1,c1), person2 at (r2,c2)
+        // where c2 = r1 + c1 - r2
+        int[][][] dp = new int[n][n][n];
+        
+        // Initialize with -1 (unreachable)
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                Arrays.fill(dp[i][j], Integer.MIN_VALUE);
+            }
+        }
+        
+        dp[0][0][0] = grid[0][0];
+        
+        for (int r1 = 0; r1 < n; r1++) {
+            for (int c1 = 0; c1 < n; c1++) {
+                for (int r2 = 0; r2 < n; r2++) {
+                    int c2 = r1 + c1 - r2;
+                    
+                    // Check if c2 is out of bounds
+                    if (c2 < 0 || c2 >= n) continue;
+                    
+                    // If current state is unreachable
+                    if (dp[r1][c1][r2] < 0) continue;
+                    
+                    // If we're at a thorn bush
+                    if (grid[r1][c1] == -1 || grid[r2][c2] == -1) {
+                        dp[r1][c1][r2] = Integer.MIN_VALUE;
+                        continue;
+                    }
+                    
+                    // Try all 4 combinations of moves (right/down for each person)
+                    int cherries = dp[r1][c1][r2];
+                    
+                    // Move both right
+                    if (r1 + 1 < n && r2 + 1 < n) {
+                        int newC1 = c1;
+                        int newC2 = c2;
+                        if (grid[r1+1][newC1] != -1 && grid[r2+1][newC2] != -1) {
+                            int newVal = cherries;
+                            if (r1+1 == r2+1 && newC1 == newC2) {
+                                newVal += grid[r1+1][newC1];
+                            } else {
+                                newVal += grid[r1+1][newC1] + grid[r2+1][newC2];
+                            }
+                            dp[r1+1][newC1][r2+1] = Math.max(dp[r1+1][newC1][r2+1], newVal);
+                        }
+                    }
+                    
+                    // Person1 right, Person2 down
+                    if (r1 + 1 < n && c2 + 1 < n) {
+                        int newC1 = c1;
+                        int newR2 = r2;
+                        int newC2 = c2 + 1;
+                        if (grid[r1+1][newC1] != -1 && grid[newR2][newC2] != -1) {
+                            int newVal = cherries;
+                            if (r1+1 == newR2 && newC1 == newC2) {
+                                newVal += grid[r1+1][newC1];
+                            } else {
+                                newVal += grid[r1+1][newC1] + grid[newR2][newC2];
+                            }
+                            dp[r1+1][newC1][newR2] = Math.max(dp[r1+1][newC1][newR2], newVal);
+                        }
+                    }
+                    
+                    // Person1 down, Person2 right
+                    if (c1 + 1 < n && r2 + 1 < n) {
+                        int newR1 = r1;
+                        int newC1 = c1 + 1;
+                        int newR2 = r2 + 1;
+                        int newC2 = c2;
+                        if (grid[newR1][newC1] != -1 && grid[newR2][newC2] != -1) {
+                            int newVal = cherries;
+                            if (newR1 == newR2 && newC1 == newC2) {
+                                newVal += grid[newR1][newC1];
+                            } else {
+                                newVal += grid[newR1][newC1] + grid[newR2][newC2];
+                            }
+                            dp[newR1][newC1][newR2] = Math.max(dp[newR1][newC1][newR2], newVal);
+                        }
+                    }
+                    
+                    // Move both down
+                    if (c1 + 1 < n && c2 + 1 < n) {
+                        int newR1 = r1;
+                        int newC1 = c1 + 1;
+                        int newR2 = r2;
+                        int newC2 = c2 + 1;
+                        if (grid[newR1][newC1] != -1 && grid[newR2][newC2] != -1) {
+                            int newVal = cherries;
+                            if (newR1 == newR2 && newC1 == newC2) {
+                                newVal += grid[newR1][newC1];
+                            } else {
+                                newVal += grid[newR1][newC1] + grid[newR2][newC2];
+                            }
+                            dp[newR1][newC1][newR2] = Math.max(dp[newR1][newC1][newR2], newVal);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Result at bottom-right
+        int result = dp[n-1][n-1][n-1];
+        return Math.max(result, 0);
+    }
+}
