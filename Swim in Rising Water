@@ -1,0 +1,48 @@
+ Swim in Rising Water
+
+
+
+class Solution {
+    public int swimInWater(int[][] grid) {
+        int n = grid.length;
+        int left = grid[0][0];
+        int right = n * n - 1;
+        
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (canReach(grid, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+    
+    private boolean canReach(int[][] grid, int time) {
+        int n = grid.length;
+        boolean[][] visited = new boolean[n][n];
+        int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        
+        return dfs(grid, 0, 0, time, visited, dirs);
+    }
+    
+    private boolean dfs(int[][] grid, int i, int j, int time, 
+                        boolean[][] visited, int[][] dirs) {
+        int n = grid.length;
+        if (i < 0 || i >= n || j < 0 || j >= n) return false;
+        if (visited[i][j]) return false;
+        if (grid[i][j] > time) return false;
+        
+        if (i == n-1 && j == n-1) return true;
+        
+        visited[i][j] = true;
+        
+        for (int[] dir : dirs) {
+            if (dfs(grid, i + dir[0], j + dir[1], time, visited, dirs)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
