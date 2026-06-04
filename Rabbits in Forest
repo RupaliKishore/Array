@@ -1,0 +1,38 @@
+ Rabbits in Forest
+
+
+
+ import java.util.*;
+
+class Solution {
+    public int numRabbits(int[] answers) {
+        // Map to store frequency of each answer
+        Map<Integer, Integer> frequencyMap = new HashMap<>();
+        
+        // Count frequency of each answer
+        for (int answer : answers) {
+            frequencyMap.put(answer, frequencyMap.getOrDefault(answer, 0) + 1);
+        }
+        
+        int totalRabbits = 0;
+        
+        // Process each distinct answer
+        for (Map.Entry<Integer, Integer> entry : frequencyMap.entrySet()) {
+            int x = entry.getKey(); // The answer value
+            int count = entry.getValue(); // Number of rabbits giving this answer
+            
+            // If x = 0, each rabbit is unique in its color
+            if (x == 0) {
+                totalRabbits += count;
+            } else {
+                // For answer x, each group can have at most (x+1) rabbits
+                // Number of groups needed = ceil(count / (x+1))
+                int groupSize = x + 1;
+                int numberOfGroups = (count + groupSize - 1) / groupSize; // Ceiling division
+                totalRabbits += numberOfGroups * groupSize;
+            }
+        }
+        
+        return totalRabbits;
+    }
+}
