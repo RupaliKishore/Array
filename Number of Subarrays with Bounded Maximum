@@ -1,0 +1,27 @@
+Number of Subarrays with Bounded Maximum
+
+
+
+class Solution {
+    public int numSubarrayBoundedMax(int[] nums, int left, int right) {
+        // Subarrays with max ≤ right - Subarrays with max ≤ left-1
+        return countSubarraysWithMaxLessThanOrEqual(nums, right) - 
+               countSubarraysWithMaxLessThanOrEqual(nums, left - 1);
+    }
+    
+    private int countSubarraysWithMaxLessThanOrEqual(int[] nums, int bound) {
+        int count = 0;
+        int subarrayCount = 0;
+        
+        for (int num : nums) {
+            if (num <= bound) {
+                subarrayCount++;
+                count += subarrayCount;
+            } else {
+                subarrayCount = 0; // Reset when we hit a number > bound
+            }
+        }
+        
+        return count;
+    }
+}
