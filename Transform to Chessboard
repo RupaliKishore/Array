@@ -1,0 +1,131 @@
+Transform to Chessboard
+
+
+
+class Solution {
+    public int movesToChessboard(int[][] board) {
+        int n = board.length;
+        
+        // Check if transformation is possible
+        if (!isPossible(board)) {
+            return -1;
+        }
+        
+        // Calculate swaps needed for rows
+        int rowSwaps = calculateSwaps(getFirstColumn(board, n), n);
+        
+        // Calculate swaps needed for columns
+        int colSwaps = calculateSwaps(board[0], n);
+        
+        return rowSwaps + colSwaps;
+    }
+    
+    private boolean isPossible(int[][] board) {
+        int n = board.length;
+        
+        // Check that each row is either same as first row or its complement
+        int[] firstRow = board[0];
+        int[] complement = new int[n];
+        for (int i = 0; i < n; i++) {
+            complement[i] = 1 - firstRow[i];
+        }
+        
+        int rowType1 = 0, rowType2 = 0;
+        for (int i = 0; i < n; i++) {
+            if (Arrays.equals(board[i], firstRow)) {
+                rowType1++;
+            } else if (Arrays.equals(board[i], complement)) {
+                rowType2++;
+            } else {
+                return false;
+            }
+        }
+        
+        // Check column constraints
+        int[] firstCol = new int[n];
+        for (int i = 0; i < n; i++) {
+            firstCol[i] = board[i][0];
+        }
+        int[] colComplement = new int[n];
+        for (int i = 0; i < n; i++) {
+            colComplement[i] = 1 - firstCol[i];
+        }
+        
+        int colType1 = 0, colType2 = 0;
+        for (int i = 0; i < n; i++) {
+            int[] currentCol = new int[n];
+            for (int j = 0; j < n; j++) {
+                currentCol[j] = board[j][i];
+            }
+            if (Arrays.equals(currentCol, firstCol)) {
+                colType1++;
+            } else if (Arrays.equals(currentCol, colComplement)) {
+                colType2++;
+            } else {
+                return false;
+            }
+        }
+        
+        // Valid chessboard property for rows
+        if (n % 2 == 0) {
+            if (rowType1 != rowType2 || colType1 != colType2) {
+                return false;
+            }
+        } else {
+            if (Math.abs(rowType1 - rowType2) != 1 || Math.abs(colType1 - colType2) != 1) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    private int[] getFirstColumn(int[][] board, int n) {
+        int[] firstCol = new int[n];
+        for (int i = 0; i < n; i++) {
+            firstCol[i] = board[i][0];
+        }
+        return firstCol;
+    }
+    
+    private int calculateSwaps(int[] arr, int n) {
+        // Count how many elements are in wrong positions for pattern starting with 0
+        int countWrongForStart0 = 0;
+        int countWrongForStart1 = 0;
+        
+        for (int i = 0; i < n; i++) {
+            // Pattern starting with 0: even indices should be 0, odd indices should be 1
+            int expectedForStart0 = i % 2;
+            if (arr[i] != expectedForStart0) {
+                countWrongForStart0++;
+            }
+            
+            // Pattern starting with 1: even indices should be 1, odd indices should be 0
+            int expectedForStart1 = (i + 1) % 2;
+            if (arr[i] != expectedForStart1) {
+                countWrongForStart1++;
+            }
+        }
+        
+        // If n is odd, the pattern with correct number of 0s and 1s is the only valid one
+        if (n % 2 == 1) {
+            // Count number of 0s in the array
+            int zeroCount = 0;
+            for (int num : arr) {
+                if (num == 0) zeroCount++;
+            }
+            
+            // For odd n, the pattern that has (n+1)/2 zeros is the valid one
+            if (zeroCount > n / 2) {
+                // More zeros, so pattern starting with 0 is valid
+                return countWrongForStart0 / 2;
+            } else {
+                // More ones, so pattern starting with 1 is valid
+                return countWrongForStart1 / 2;
+            }
+        } else {
+            // For even n, choose the pattern with fewer swaps
+            return Math.min(countWrongForStart0, countWrongForStart1) / 2;
+        }
+    }
+}
