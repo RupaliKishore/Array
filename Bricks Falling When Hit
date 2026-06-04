@@ -1,0 +1,128 @@
+Bricks Falling When Hit
+
+
+
+import java.util.*;
+
+class Solution {
+    int rows, cols;
+    int[][] grid;
+    int[] parent;
+    int[] size;
+    int[] dr = {0, 1, 0, -1};
+    int[] dc = {1, 0, -1, 0};
+    
+    public int[] hitBricks(int[][] grid, int[][] hits) {
+        this.grid = grid;
+        rows = grid.length;
+        cols = grid[0].length;
+        
+        // Create a copy and mark hit bricks as 0
+        int[][] copy = new int[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            copy[i] = grid[i].clone();
+        }
+        
+        // Remove all hit bricks from the copy
+        for (int[] hit : hits) {
+            int r = hit[0], c = hit[1];
+            copy[r][c] = 0;
+        }
+        
+        // Initialize Union-Find
+        // We have rows*cols cells + 1 extra node for "top" (index = rows*cols)
+        parent = new int[rows * cols + 1];
+        size = new int[rows * cols + 1];
+        for (int i = 0; i <= rows * cols; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+        
+        // Connect all top row bricks to the "top" node
+        int topNode = rows * cols;
+        for (int c = 0; c < cols; c++) {
+            if (copy[0][c] == 1) {
+                union(c, topNode);
+            }
+        }
+        
+        // Connect adjacent bricks in the copy
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (copy[r][c] == 1) {
+                    if (r > 0 && copy[r-1][c] == 1) {
+                        union(getIndex(r, c), getIndex(r-1, c));
+                    }
+                    if (c > 0 && copy[r][c-1] == 1) {
+                        union(getIndex(r, c), getIndex(r, c-1));
+                    }
+                }
+            }
+        }
+        
+        // Process hits in reverse order
+        int m = hits.length;
+        int[] result = new int[m];
+        for (int i = m - 1; i >= 0; i--) {
+            int r = hits[i][0], c = hits[i][1];
+            
+            // If the original grid had 0 at this position, skip
+            if (grid[r][c] == 0) {
+                result[i] = 0;
+                continue;
+            }
+            
+            // Count bricks currently connected to top
+            int prevTopSize = size[find(topNode)];
+            
+            // Add the brick back
+            copy[r][c] = 1;
+            
+            // Connect to adjacent bricks
+            int index = getIndex(r, c);
+            for (int d = 0; d < 4; d++) {
+                int nr = r + dr[d];
+                int nc = c + dc[d];
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && copy[nr][nc] == 1) {
+                    union(index, getIndex(nr, nc));
+                }
+            }
+            
+            // Connect to top if it's on first row
+            if (r == 0) {
+                union(index, topNode);
+            }
+            
+            // Calculate how many new bricks are connected to top
+            int newTopSize = size[find(topNode)];
+            result[i] = Math.max(0, newTopSize - prevTopSize - 1);
+        }
+        
+        return result;
+    }
+    
+    private int getIndex(int r, int c) {
+        return r * cols + c;
+    }
+    
+    private int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]);
+        }
+        return parent[x];
+    }
+    
+    private void union(int x, int y) {
+        int rootX = find(x);
+        int rootY = find(y);
+        if (rootX == rootY) return;
+        
+        if (size[rootX] < size[rootY]) {
+            parent[rootX] = rootY;
+            size[rootY] += size[rootX];
+        } else {
+            parent[rootY] = rootX;
+            size[rootX] += size[rootY];
+        }
+    }
+}
