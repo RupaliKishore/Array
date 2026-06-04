@@ -1,0 +1,55 @@
+K-th Smallest Prime Fraction
+
+
+
+import java.util.*;
+
+class Solution {
+    public int[] kthSmallestPrimeFraction(int[] arr, int k) {
+        int n = arr.length;
+        double left = 0.0, right = 1.0;
+        
+        // Binary search for the k-th smallest fraction value
+        while (left < right) {
+            double mid = (left + right) / 2.0;
+            
+            // Count fractions <= mid and track the largest such fraction
+            int count = 0;
+            double maxFraction = 0.0;
+            int numerator = 0, denominator = 0;
+            
+            // For each numerator index i, find the smallest j such that arr[i]/arr[j] > mid
+            // Then all pairs with this i and j' >= j are > mid
+            int j = 1;
+            for (int i = 0; i < n - 1; i++) {
+                // Move j to the right while arr[i]/arr[j] > mid
+                while (j < n && arr[i] > mid * arr[j]) {
+                    j++;
+                }
+                
+                // All fractions with this i and indices from i+1 to j-1 are <= mid
+                count += (n - j);
+                
+                // Track the largest fraction <= mid
+                if (j < n) {
+                    double fraction = (double) arr[i] / arr[j];
+                    if (fraction > maxFraction) {
+                        maxFraction = fraction;
+                        numerator = arr[i];
+                        denominator = arr[j];
+                    }
+                }
+            }
+            
+            if (count == k) {
+                return new int[]{numerator, denominator};
+            } else if (count < k) {
+                left = mid;
+            } else {
+                right = mid;
+            }
+        }
+        
+        return new int[]{0, 0};
+    }
+}
