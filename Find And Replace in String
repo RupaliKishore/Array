@@ -1,0 +1,53 @@
+Find And Replace in String
+
+
+
+import java.util.*;
+
+class Solution {
+    public String findReplaceString(String s, int[] indices, String[] sources, String[] targets) {
+        int n = s.length();
+        int k = indices.length;
+        
+        // Create array of operations and sort by index
+        Operation[] ops = new Operation[k];
+        for (int i = 0; i < k; i++) {
+            ops[i] = new Operation(indices[i], sources[i], targets[i]);
+        }
+        Arrays.sort(ops, (a, b) -> a.index - b.index);
+        
+        StringBuilder result = new StringBuilder();
+        int lastIndex = 0;
+        
+        // Process operations in order
+        for (Operation op : ops) {
+            // Add characters before this operation
+            result.append(s, lastIndex, op.index);
+            
+            // Check if replacement should happen
+            if (s.startsWith(op.source, op.index)) {
+                result.append(op.target);
+                lastIndex = op.index + op.source.length();
+            } else {
+                lastIndex = op.index;
+            }
+        }
+        
+        // Add remaining characters
+        result.append(s, lastIndex, n);
+        
+        return result.toString();
+    }
+    
+    class Operation {
+        int index;
+        String source;
+        String target;
+        
+        Operation(int index, String source, String target) {
+            this.index = index;
+            this.source = source;
+            this.target = target;
+        }
+    }
+}
