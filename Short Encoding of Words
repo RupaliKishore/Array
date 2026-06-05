@@ -1,0 +1,28 @@
+Short Encoding of Words
+
+
+
+import java.util.*;
+
+class Solution {
+    public int minimumLengthEncoding(String[] words) {
+        // Use a set to store unique words
+        Set<String> wordSet = new HashSet<>(Arrays.asList(words));
+        
+        // Remove words that are suffixes of other words
+        for (String word : words) {
+            for (int k = 1; k < word.length(); k++) {
+                // If any suffix of current word exists in the set, remove it
+                wordSet.remove(word.substring(k));
+            }
+        }
+        
+        // Calculate total length: length of each word + 1 for '#'
+        int totalLength = 0;
+        for (String word : wordSet) {
+            totalLength += word.length() + 1;
+        }
+        
+        return totalLength;
+    }
+}
