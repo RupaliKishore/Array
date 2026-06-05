@@ -1,0 +1,42 @@
+Guess the Word
+
+
+
+
+import java.util.*;
+
+class Solution {
+    public void findSecretWord(String[] wordlist, Master master) {
+        List<String> words = new ArrayList<>(Arrays.asList(wordlist));
+        Random random = new Random();
+        
+        for (int attempts = 0; attempts < 10 && !words.isEmpty(); attempts++) {
+            // Pick a random word from remaining candidates
+            String guess = words.get(random.nextInt(words.size()));
+            int match = master.guess(guess);
+            
+            if (match == 6) {
+                return;
+            }
+            
+            // Filter to words that would produce the same match count
+            List<String> newWords = new ArrayList<>();
+            for (String word : words) {
+                if (countMatches(word, guess) == match) {
+                    newWords.add(word);
+                }
+            }
+            words = newWords;
+        }
+    }
+    
+    private int countMatches(String a, String b) {
+        int count = 0;
+        for (int i = 0; i < a.length(); i++) {
+            if (a.charAt(i) == b.charAt(i)) {
+                count++;
+            }
+        }
+        return count;
+    }
+}
