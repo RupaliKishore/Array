@@ -1,0 +1,69 @@
+Expressive Words
+
+
+
+class Solution {
+    public int expressiveWords(String s, String[] words) {
+        // Preprocess s: get characters and their counts
+        List<Character> charsS = new ArrayList<>();
+        List<Integer> countsS = new ArrayList<>();
+        preprocess(s, charsS, countsS);
+        
+        int result = 0;
+        
+        for (String word : words) {
+            List<Character> charsW = new ArrayList<>();
+            List<Integer> countsW = new ArrayList<>();
+            preprocess(word, charsW, countsW);
+            
+            if (isStretchy(charsS, countsS, charsW, countsW)) {
+                result++;
+            }
+        }
+        
+        return result;
+    }
+    
+    private void preprocess(String str, List<Character> chars, List<Integer> counts) {
+        int n = str.length();
+        int i = 0;
+        
+        while (i < n) {
+            char c = str.charAt(i);
+            int count = 0;
+            while (i < n && str.charAt(i) == c) {
+                count++;
+                i++;
+            }
+            chars.add(c);
+            counts.add(count);
+        }
+    }
+    
+    private boolean isStretchy(List<Character> charsS, List<Integer> countsS,
+                               List<Character> charsW, List<Integer> countsW) {
+        if (charsS.size() != charsW.size()) {
+            return false;
+        }
+        
+        for (int i = 0; i < charsS.size(); i++) {
+            if (charsS.get(i) != charsW.get(i)) {
+                return false;
+            }
+            
+            int countS = countsS.get(i);
+            int countW = countsW.get(i);
+            
+            if (countS < countW) {
+                return false;
+            }
+            if (countS == 2 && countW == 1) {
+                return false;
+            }
+            // For countS >= 3, countW can be any number <= countS
+            // except when countS == 2 and countW == 1 (already handled)
+        }
+        
+        return true;
+    }
+}
