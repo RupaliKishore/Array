@@ -1,0 +1,24 @@
+Number of Lines To Write String
+
+
+
+class Solution {
+    public int[] numberOfLines(int[] widths, String s) {
+        int lines = 1;  // Start with at least 1 line
+        int currentWidth = 0;
+        
+        for (char c : s.toCharArray()) {
+            int charWidth = widths[c - 'a'];  // Get width of current character
+            
+            // If adding this character exceeds line width, start new line
+            if (currentWidth + charWidth > 100) {
+                lines++;
+                currentWidth = charWidth;  // Start new line with this character
+            } else {
+                currentWidth += charWidth;  // Add to current line
+            }
+        }
+        
+        return new int[]{lines, currentWidth};
+    }
+}
