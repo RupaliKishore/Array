@@ -1,0 +1,63 @@
+Split Array With Same Average
+
+
+
+import java.util.*;
+
+class Solution {
+    public boolean splitArraySameAverage(int[] nums) {
+        int n = nums.length;
+        if (n == 1) return false;
+        
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        
+        // Sort to optimize subset sum search
+        Arrays.sort(nums);
+        
+        // Try all possible subset sizes for array A
+        for (int k = 1; k <= n / 2; k++) {
+            // Check if (sum * k) % n == 0
+            if ((sum * k) % n != 0) {
+                continue;
+            }
+            
+            int targetSum = (sum * k) / n;
+            
+            // Use DP to find if there's a subset of size k with sum = targetSum
+            if (canFindSubset(nums, k, targetSum)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    private boolean canFindSubset(int[] nums, int k, int targetSum) {
+        int n = nums.length;
+        // DP: dp[i][s] = whether we can achieve sum s with i elements
+        // Using Set to optimize space
+        Set<Integer>[] dp = new Set[k + 1];
+        for (int i = 0; i <= k; i++) {
+            dp[i] = new HashSet<>();
+        }
+        
+        dp[0].add(0);
+        
+        for (int num : nums) {
+            // Iterate backwards to avoid reusing the same element
+            for (int i = k; i >= 1; i--) {
+                for (int prevSum : new HashSet<>(dp[i - 1])) {
+                    int newSum = prevSum + num;
+                    if (newSum <= targetSum) {
+                        dp[i].add(newSum);
+                    }
+                }
+            }
+        }
+        
+        return dp[k].contains(targetSum);
+    }
+}
