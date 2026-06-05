@@ -1,0 +1,58 @@
+Most Profit Assigning Work
+
+
+
+import java.util.*;
+
+class Solution {
+    public int maxProfitAssignment(int[] difficulty, int[] profit, int[] worker) {
+        int n = difficulty.length;
+        int m = worker.length;
+        
+        // Create array of jobs and sort by difficulty
+        Job[] jobs = new Job[n];
+        for (int i = 0; i < n; i++) {
+            jobs[i] = new Job(difficulty[i], profit[i]);
+        }
+        Arrays.sort(jobs, (a, b) -> a.difficulty - b.difficulty);
+        
+        // Create prefix max profit array
+        int[] maxProfitUpTo = new int[n];
+        maxProfitUpTo[0] = jobs[0].profit;
+        for (int i = 1; i < n; i++) {
+            maxProfitUpTo[i] = Math.max(maxProfitUpTo[i - 1], jobs[i].profit);
+        }
+        
+        // Sort workers
+        Arrays.sort(worker);
+        
+        int totalProfit = 0;
+        int jobIndex = 0;
+        int bestProfit = 0;
+        
+        // For each worker, find best job
+        for (int i = 0; i < m; i++) {
+            int ability = worker[i];
+            
+            // Update bestProfit by adding all jobs this worker can do
+            while (jobIndex < n && jobs[jobIndex].difficulty <= ability) {
+                bestProfit = Math.max(bestProfit, jobs[jobIndex].profit);
+                jobIndex++;
+            }
+            
+            totalProfit += bestProfit;
+        }
+        
+        return totalProfit;
+    }
+    
+    class Job {
+        int difficulty;
+        int profit;
+        
+        Job(int difficulty, int profit) {
+            this.difficulty = difficulty;
+            this.profit = profit;
+        }
+    }
+}
