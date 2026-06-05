@@ -1,0 +1,29 @@
+Shortest Distance to a Character
+
+
+class Solution {
+    public int[] shortestToChar(String s, char c) {
+        int n = s.length();
+        int[] result = new int[n];
+        
+        // First pass:从左到右，记录到左边最近的c的距离
+        int prev = -n; // 初始化为一个足够小的值
+        for (int i = 0; i < n; i++) {
+            if (s.charAt(i) == c) {
+                prev = i;
+            }
+            result[i] = i - prev;
+        }
+        
+        // Second pass:从右到左，记录到右边最近的c的距离，取最小值
+        int next = 2 * n; // 初始化为一个足够大的值
+        for (int i = n - 1; i >= 0; i--) {
+            if (s.charAt(i) == c) {
+                next = i;
+            }
+            result[i] = Math.min(result[i], next - i);
+        }
+        
+        return result;
+    }
+}
