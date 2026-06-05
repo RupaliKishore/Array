@@ -1,0 +1,41 @@
+Max Increase to Keep City Skyline
+
+
+
+class Solution {
+    public int maxIncreaseKeepingSkyline(int[][] grid) {
+        int n = grid.length;
+        
+        // Find the maximum height in each row (east-west skyline)
+        int[] rowMax = new int[n];
+        for (int i = 0; i < n; i++) {
+            int max = 0;
+            for (int j = 0; j < n; j++) {
+                max = Math.max(max, grid[i][j]);
+            }
+            rowMax[i] = max;
+        }
+        
+        // Find the maximum height in each column (north-south skyline)
+        int[] colMax = new int[n];
+        for (int j = 0; j < n; j++) {
+            int max = 0;
+            for (int i = 0; i < n; i++) {
+                max = Math.max(max, grid[i][j]);
+            }
+            colMax[j] = max;
+        }
+        
+        // Calculate the maximum increase possible
+        int totalIncrease = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                // The new height is limited by the minimum of row and column max
+                int newHeight = Math.min(rowMax[i], colMax[j]);
+                totalIncrease += newHeight - grid[i][j];
+            }
+        }
+        
+        return totalIncrease;
+    }
+}
