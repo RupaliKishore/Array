@@ -1,0 +1,38 @@
+Card Flipping Game
+
+
+
+import java.util.*;
+
+class Solution {
+    public int flipgame(int[] fronts, int[] backs) {
+        int n = fronts.length;
+        
+        // Find numbers that appear on both sides of the same card
+        Set<Integer> impossible = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            if (fronts[i] == backs[i]) {
+                impossible.add(fronts[i]);
+            }
+        }
+        
+        // Find the smallest candidate number
+        int minGood = Integer.MAX_VALUE;
+        
+        // Check all front numbers
+        for (int i = 0; i < n; i++) {
+            if (!impossible.contains(fronts[i])) {
+                minGood = Math.min(minGood, fronts[i]);
+            }
+        }
+        
+        // Check all back numbers
+        for (int i = 0; i < n; i++) {
+            if (!impossible.contains(backs[i])) {
+                minGood = Math.min(minGood, backs[i]);
+            }
+        }
+        
+        return minGood == Integer.MAX_VALUE ? 0 : minGood;
+    }
+}
