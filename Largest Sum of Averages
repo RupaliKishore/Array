@@ -1,0 +1,37 @@
+Largest Sum of Averages
+
+
+
+
+class Solution {
+    public double largestSumOfAverages(int[] nums, int k) {
+        int n = nums.length;
+        
+        // Prefix sum array for O(1) subarray sum calculation
+        double[] prefixSum = new double[n + 1];
+        for (int i = 0; i < n; i++) {
+            prefixSum[i + 1] = prefixSum[i] + nums[i];
+        }
+        
+        // dp[i][k] = max sum of averages for first i elements with k partitions
+        double[][] dp = new double[n + 1][k + 1];
+        
+        // Base case: partition into 1 group
+        for (int i = 1; i <= n; i++) {
+            dp[i][1] = prefixSum[i] / i;
+        }
+        
+        // Fill DP table
+        for (int kVal = 2; kVal <= k; kVal++) {
+            for (int i = kVal; i <= n; i++) {
+                // Try all possible positions for the last partition
+                for (int j = kVal - 1; j < i; j++) {
+                    double avg = (prefixSum[i] - prefixSum[j]) / (i - j);
+                    dp[i][kVal] = Math.max(dp[i][kVal], dp[j][kVal - 1] + avg);
+                }
+            }
+        }
+        
+        return dp[n][k];
+    }
+}
