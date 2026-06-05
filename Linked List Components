@@ -1,0 +1,36 @@
+Linked List Components
+
+
+
+import java.util.*;
+
+class Solution {
+    public int numComponents(ListNode head, int[] nums) {
+        // Store nums in a set for O(1) lookup
+        Set<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            set.add(num);
+        }
+        
+        int components = 0;
+        ListNode current = head;
+        boolean inComponent = false;
+        
+        while (current != null) {
+            if (set.contains(current.val)) {
+                // Current node is in nums
+                if (!inComponent) {
+                    // Start of a new component
+                    components++;
+                    inComponent = true;
+                }
+            } else {
+                // Current node not in nums, break the component
+                inComponent = false;
+            }
+            current = current.next;
+        }
+        
+        return components;
+    }
+}
