@@ -1,0 +1,92 @@
+Magic Squares In Grid
+
+
+
+import java.util.*;
+
+class Solution {
+    public int numSimilarGroups(String[] strs) {
+        int n = strs.length;
+        UnionFind uf = new UnionFind(n);
+        
+        // Compare each pair of strings
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (areSimilar(strs[i], strs[j])) {
+                    uf.union(i, j);
+                }
+            }
+        }
+        
+        // Count number of unique groups
+        return uf.getGroups();
+    }
+    
+    private boolean areSimilar(String a, String b) {
+        if (a.equals(b)) return true;
+        
+        int firstDiff = -1, secondDiff = -1;
+        int diffCount = 0;
+        
+        for (int i = 0; i < a.length(); i++) {
+            if (a.charAt(i) != b.charAt(i)) {
+                diffCount++;
+                if (diffCount == 1) {
+                    firstDiff = i;
+                } else if (diffCount == 2) {
+                    secondDiff = i;
+                } else {
+                    return false; // More than 2 differences
+                }
+            }
+        }
+        
+        // Check if swapping the two differences makes them equal
+        return diffCount == 2 && 
+               a.charAt(firstDiff) == b.charAt(secondDiff) && 
+               a.charAt(secondDiff) == b.charAt(firstDiff);
+    }
+    
+    class UnionFind {
+        int[] parent;
+        int[] rank;
+        int groups;
+        
+        UnionFind(int n) {
+            parent = new int[n];
+            rank = new int[n];
+            groups = n;
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+            }
+        }
+        
+        int find(int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+        
+        void union(int x, int y) {
+            int rootX = find(x);
+            int rootY = find(y);
+            
+            if (rootX != rootY) {
+                if (rank[rootX] < rank[rootY]) {
+                    parent[rootX] = rootY;
+                } else if (rank[rootX] > rank[rootY]) {
+                    parent[rootY] = rootX;
+                } else {
+                    parent[rootY] = rootX;
+                    rank[rootX]++;
+                }
+                groups--;
+            }
+        }
+        
+        int getGroups() {
+            return groups;
+        }
+    }
+}
