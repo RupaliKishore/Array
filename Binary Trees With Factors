@@ -1,0 +1,56 @@
+Binary Trees With Factors
+
+
+
+import java.util.*;
+
+class Solution {
+    private static final int MOD = 1_000_000_007;
+    
+    public int numFactoredBinaryTrees(int[] arr) {
+        int n = arr.length;
+        
+        // Sort array to process smaller numbers first
+        Arrays.sort(arr);
+        
+        // Map value to its index for O(1) lookup
+        Map<Integer, Integer> indexMap = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            indexMap.put(arr[i], i);
+        }
+        
+        // dp[i] = number of trees with root = arr[i]
+        long[] dp = new long[n];
+        Arrays.fill(dp, 1); // Each number can form a single-node tree
+        
+        // Process each number as potential root
+        for (int i = 0; i < n; i++) {
+            int root = arr[i];
+            
+            // Try all possible factor pairs
+            for (int j = 0; j < i; j++) {
+                int left = arr[j];
+                
+                // Check if left divides root
+                if (root % left != 0) continue;
+                
+                int right = root / left;
+                
+                // Check if right exists in arr (must be <= root due to sorting)
+                if (indexMap.containsKey(right)) {
+                    int k = indexMap.get(right);
+                    // Combine left and right subtrees
+                    dp[i] = (dp[i] + dp[j] * dp[k]) % MOD;
+                }
+            }
+        }
+        
+        // Sum all possibilities
+        long result = 0;
+        for (long count : dp) {
+            result = (result + count) % MOD;
+        }
+        
+        return (int) result;
+    }
+}
