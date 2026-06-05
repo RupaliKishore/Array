@@ -1,0 +1,83 @@
+Making A Large Island
+
+
+
+import java.util.*;
+
+class Solution {
+    private int n;
+    private int[][] grid;
+    private int[][] islandId;
+    private Map<Integer, Integer> islandSize;
+    private int[] dx = {-1, 1, 0, 0};
+    private int[] dy = {0, 0, -1, 1};
+    
+    public int largestIsland(int[][] grid) {
+        this.grid = grid;
+        n = grid.length;
+        islandId = new int[n][n];
+        islandSize = new HashMap<>();
+        
+        int id = 1; // Start from 1, 0 means water/unvisited
+        
+        // Step 1: Find all existing islands
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1 && islandId[i][j] == 0) {
+                    int size = dfs(i, j, id);
+                    islandSize.put(id, size);
+                    id++;
+                }
+            }
+        }
+        
+        // Step 2: If no islands (all water), we can only flip one cell
+        if (islandSize.isEmpty()) {
+            return 1;
+        }
+        
+        // Step 3: Try flipping each 0 to 1
+        int maxSize = islandSize.get(1); // At least the largest existing island
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    Set<Integer> neighborIds = new HashSet<>();
+                    int total = 1; // Flipping this cell
+                    
+                    for (int d = 0; d < 4; d++) {
+                        int ni = i + dx[d];
+                        int nj = j + dy[d];
+                        
+                        if (ni >= 0 && ni < n && nj >= 0 && nj < n && grid[ni][nj] == 1) {
+                            int neighborId = islandId[ni][nj];
+                            if (!neighborIds.contains(neighborId)) {
+                                neighborIds.add(neighborId);
+                                total += islandSize.get(neighborId);
+                            }
+                        }
+                    }
+                    
+                    maxSize = Math.max(maxSize, total);
+                }
+            }
+        }
+        
+        return maxSize;
+    }
+    
+    private int dfs(int i, int j, int id) {
+        if (i < 0 || i >= n || j < 0 || j >= n || grid[i][j] == 0 || islandId[i][j] != 0) {
+            return 0;
+        }
+        
+        islandId[i][j] = id;
+        int size = 1;
+        
+        for (int d = 0; d < 4; d++) {
+            size += dfs(i + dx[d], j + dy[d], id);
+        }
+        
+        return size;
+    }
+}
