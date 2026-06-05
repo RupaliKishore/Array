@@ -1,0 +1,33 @@
+Friends Of Appropriate Ages
+
+
+
+class Solution {
+    public int numFriendRequests(int[] ages) {
+        int[] count = new int[121];
+        for (int age : ages) {
+            count[age]++;
+        }
+        
+        int total = 0;
+        
+        for (int ageA = 1; ageA <= 120; ageA++) {
+            for (int ageB = 1; ageB <= 120; ageB++) {
+                if (count[ageA] == 0 || count[ageB] == 0) continue;
+                
+                // Check if A can send request to B
+                if (ageB <= 0.5 * ageA + 7) continue;
+                if (ageB > ageA) continue;
+                if (ageB > 100 && ageA < 100) continue;
+                
+                if (ageA == ageB) {
+                    total += count[ageA] * (count[ageA] - 1);
+                } else {
+                    total += count[ageA] * count[ageB];
+                }
+            }
+        }
+        
+        return total;
+    }
+}
