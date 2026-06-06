@@ -1,0 +1,39 @@
+Hand of Straights
+
+
+
+import java.util.*;
+
+class Solution {
+    public boolean isNStraightHand(int[] hand, int groupSize) {
+        // Base case: if groupSize is 1, always possible
+        if (groupSize == 1) return true;
+        
+        // If total cards not divisible by groupSize, impossible
+        if (hand.length % groupSize != 0) return false;
+        
+        // Count frequency of each card
+        TreeMap<Integer, Integer> cardCount = new TreeMap<>();
+        for (int card : hand) {
+            cardCount.put(card, cardCount.getOrDefault(card, 0) + 1);
+        }
+        
+        // Process cards in sorted order
+        for (int start : cardCount.keySet()) {
+            int count = cardCount.get(start);
+            if (count > 0) {
+                // Try to form group starting from 'start'
+                for (int i = 0; i < groupSize; i++) {
+                    int currentCard = start + i;
+                    if (cardCount.getOrDefault(currentCard, 0) < count) {
+                        return false;
+                    }
+                    // Reduce frequency
+                    cardCount.put(currentCard, cardCount.get(currentCard) - count);
+                }
+            }
+        }
+        
+        return true;
+    }
+}
