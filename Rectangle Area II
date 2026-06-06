@@ -1,0 +1,113 @@
+Rectangle Area II
+
+
+
+
+import java.util.*;
+
+class Solution {
+    class Event {
+        int x, y1, y2, type; // type: 1 = start, -1 = end
+        
+        Event(int x, int y1, int y2, int type) {
+            this.x = x;
+            this.y1 = y1;
+            this.y2 = y2;
+            this.type = type;
+        }
+    }
+    
+    public int rectangleArea(int[][] rectangles) {
+        int MOD = 1_000_000_007;
+        int n = rectangles.length;
+        
+        // Create events
+        List<Event> events = new ArrayList<>();
+        Set<Integer> yCoords = new TreeSet<>();
+        
+        for (int[] rect : rectangles) {
+            int x1 = rect[0], y1 = rect[1], x2 = rect[2], y2 = rect[3];
+            events.add(new Event(x1, y1, y2, 1));  // start event
+            events.add(new Event(x2, y1, y2, -1)); // end event
+            yCoords.add(y1);
+            yCoords.add(y2);
+        }
+        
+        // Sort events by x
+        events.sort((a, b) -> a.x - b.x);
+        
+        // Convert y coordinates to indices
+        List<Integer> yList = new ArrayList<>(yCoords);
+        int ySize = yList.size();
+        Map<Integer, Integer> yIndex = new HashMap<>();
+        for (int i = 0; i < ySize; i++) {
+            yIndex.put(yList.get(i), i);
+        }
+        
+        // Segment tree to track active y-intervals
+        SegmentTree segTree = new SegmentTree(ySize, yList);
+        
+        long totalArea = 0;
+        int prevX = events.get(0).x;
+        
+        for (Event event : events) {
+            int currX = event.x;
+            
+            // Add area from previous x to current x
+            long width = currX - prevX;
+            long height = segTree.getActiveLength();
+            totalArea = (totalArea + width * height) % MOD;
+            
+            // Update segment tree
+            int y1Idx = yIndex.get(event.y1);
+            int y2Idx = yIndex.get(event.y2);
+            segTree.update(y1Idx, y2Idx - 1, event.type);
+            
+            prevX = currX;
+        }
+        
+        return (int) totalArea;
+    }
+    
+    class SegmentTree {
+        int n;
+        int[] count;
+        long[] length;
+        List<Integer> yCoords;
+        
+        SegmentTree(int size, List<Integer> yCoords) {
+            this.n = size;
+            this.count = new int[4 * size];
+            this.length = new long[4 * size];
+            this.yCoords = yCoords;
+        }
+        
+        void update(int node, int l, int r, int ql, int qr, int val) {
+            if (qr < l || ql > r) return;
+            
+            if (ql <= l && r <= qr) {
+                count[node] += val;
+            } else {
+                int mid = (l + r) / 2;
+                update(node * 2, l, mid, ql, qr, val);
+                update(node * 2 + 1, mid + 1, r, ql, qr, val);
+            }
+            
+            if (count[node] > 0) {
+                length[node] = yCoords.get(r + 1) - yCoords.get(l);
+            } else if (l == r) {
+                length[node] = 0;
+            } else {
+                length[node] = length[node * 2] + length[node * 2 + 1];
+            }
+        }
+        
+        void update(int ql, int qr, int val) {
+            update(1, 0, n - 2, ql, qr, val);
+        }
+        
+        long getActiveLength() {
+            return length[1];
+        }
+    }
+}
