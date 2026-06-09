@@ -1,0 +1,47 @@
+Score After Flipping Matrix
+
+
+
+class Solution {
+    public int matrixScore(int[][] grid) {
+        int m = grid.length;    // rows
+        int n = grid[0].length; // columns
+        
+        // Step 1: Make first column all 1s by flipping rows if needed
+        for (int i = 0; i < m; i++) {
+            if (grid[i][0] == 0) {
+                // Flip this entire row
+                for (int j = 0; j < n; j++) {
+                    grid[i][j] = 1 - grid[i][j];
+                }
+            }
+        }
+        
+        // Step 2: For each remaining column, ensure # of 1s >= # of 0s
+        for (int j = 1; j < n; j++) {
+            int countOnes = 0;
+            for (int i = 0; i < m; i++) {
+                countOnes += grid[i][j];
+            }
+            
+            // If fewer ones than zeros, flip this column
+            if (countOnes < m - countOnes) {
+                for (int i = 0; i < m; i++) {
+                    grid[i][j] = 1 - grid[i][j];
+                }
+            }
+        }
+        
+        // Step 3: Calculate the total score
+        int score = 0;
+        for (int i = 0; i < m; i++) {
+            int rowValue = 0;
+            for (int j = 0; j < n; j++) {
+                rowValue = (rowValue << 1) | grid[i][j];
+            }
+            score += rowValue;
+        }
+        
+        return score;
+    }
+}
