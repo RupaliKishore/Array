@@ -1,0 +1,94 @@
+ Shortest Path to Get All Keys
+
+
+
+import java.util.*;
+
+class Solution {
+    public int shortestPathAllKeys(String[] grid) {
+        int m = grid.length;
+        int n = grid[0].length();
+        
+        // Find starting position and count total keys
+        int startRow = -1, startCol = -1;
+        int totalKeys = 0;
+        
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                char c = grid[i].charAt(j);
+                if (c == '@') {
+                    startRow = i;
+                    startCol = j;
+                } else if (c >= 'a' && c <= 'f') {
+                    totalKeys = Math.max(totalKeys, c - 'a' + 1);
+                }
+            }
+        }
+        
+        // BFS: state = (row, col, keysMask)
+        boolean[][][] visited = new boolean[m][n][1 << totalKeys];
+        Queue<int[]> queue = new LinkedList<>();
+        
+        // Start state
+        queue.offer(new int[]{startRow, startCol, 0, 0}); // {row, col, keysMask, steps}
+        visited[startRow][startCol][0] = true;
+        
+        // Directions: up, down, left, right
+        int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        
+        while (!queue.isEmpty()) {
+            int[] curr = queue.poll();
+            int row = curr[0];
+            int col = curr[1];
+            int keysMask = curr[2];
+            int steps = curr[3];
+            
+            // Check if we have all keys
+            if (keysMask == (1 << totalKeys) - 1) {
+                return steps;
+            }
+            
+            // Explore neighbors
+            for (int[] dir : dirs) {
+                int newRow = row + dir[0];
+                int newCol = col + dir[1];
+                
+                // Check bounds
+                if (newRow < 0 || newRow >= m || newCol < 0 || newCol >= n) {
+                    continue;
+                }
+                
+                char cell = grid[newRow].charAt(newCol);
+                
+                // Check if wall
+                if (cell == '#') {
+                    continue;
+                }
+                
+                // Check if lock without key
+                if (cell >= 'A' && cell <= 'F') {
+                    int requiredKey = cell - 'A';
+                    if ((keysMask & (1 << requiredKey)) == 0) {
+                        continue; // Don't have the key
+                    }
+                }
+                
+                int newKeysMask = keysMask;
+                
+                // Collect key if present
+                if (cell >= 'a' && cell <= 'f') {
+                    int keyBit = cell - 'a';
+                    newKeysMask |= (1 << keyBit);
+                }
+                
+                // Check if visited with this keysMask
+                if (!visited[newRow][newCol][newKeysMask]) {
+                    visited[newRow][newCol][newKeysMask] = true;
+                    queue.offer(new int[]{newRow, newCol, newKeysMask, steps + 1});
+                }
+            }
+        }
+        
+        return -1; // Impossible to collect all keys
+    }
+}
