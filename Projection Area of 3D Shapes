@@ -1,0 +1,30 @@
+Projection Area of 3D Shapes
+
+
+
+
+class Solution {
+    public int projectionArea(int[][] grid) {
+        int n = grid.length;
+        int top = 0;
+        int side = 0;  // rows
+        int front = 0; // columns
+        
+        for (int i = 0; i < n; i++) {
+            int rowMax = 0;
+            int colMax = 0;
+            for (int j = 0; j < n; j++) {
+                // Top view: count non-zero cells
+                if (grid[i][j] > 0) top++;
+                // Side view (row maximum)
+                rowMax = Math.max(rowMax, grid[i][j]);
+                // Front view (column maximum)
+                colMax = Math.max(colMax, grid[j][i]);
+            }
+            side += rowMax;
+            front += colMax;
+        }
+        
+        return top + side + front;
+    }
+}
