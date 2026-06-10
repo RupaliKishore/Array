@@ -1,0 +1,44 @@
+Walking Robot Simulation
+
+
+
+
+import java.util.*;
+
+class Solution {
+    public int robotSim(int[] commands, int[][] obstacles) {
+        // Direction vectors: north, east, south, west
+        int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        int dir = 0; // start facing north
+        
+        // Store obstacles in a set for quick lookup
+        Set<String> obstacleSet = new HashSet<>();
+        for (int[] obs : obstacles) {
+            obstacleSet.add(obs[0] + "," + obs[1]);
+        }
+        
+        int x = 0, y = 0;
+        int maxDistSq = 0;
+        
+        for (int cmd : commands) {
+            if (cmd == -2) { // turn left
+                dir = (dir + 3) % 4;
+            } else if (cmd == -1) { // turn right
+                dir = (dir + 1) % 4;
+            } else { // move forward
+                for (int step = 0; step < cmd; step++) {
+                    int nextX = x + dirs[dir][0];
+                    int nextY = y + dirs[dir][1];
+                    if (obstacleSet.contains(nextX + "," + nextY)) {
+                        break; // obstacle encountered, stop moving
+                    }
+                    x = nextX;
+                    y = nextY;
+                    maxDistSq = Math.max(maxDistSq, x*x + y*y);
+                }
+            }
+        }
+        
+        return maxDistSq;
+    }
+}
