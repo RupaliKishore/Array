@@ -1,0 +1,42 @@
+Minimum Number of Refueling Stops
+
+
+
+
+
+import java.util.*;
+
+class Solution {
+    public int minRefuelStops(int target, int startFuel, int[][] stations) {
+        // Max heap to store fuel amounts of passed stations
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> b - a);
+        
+        long currentFuel = startFuel;
+        int stops = 0;
+        int prevPos = 0;
+        
+        // Add a virtual station at target with 0 fuel for easier handling
+        // We'll process each station and finally the target
+        int i = 0;
+        int n = stations.length;
+        
+        while (currentFuel < target) {
+            // Add all stations that are within current reach
+            while (i < n && stations[i][0] <= currentFuel) {
+                maxHeap.offer(stations[i][1]);
+                i++;
+            }
+            
+            // If no stations to refuel from, impossible
+            if (maxHeap.isEmpty()) {
+                return -1;
+            }
+            
+            // Refuel from the station with most fuel
+            currentFuel += maxHeap.poll();
+            stops++;
+        }
+        
+        return stops;
+    }
+}
