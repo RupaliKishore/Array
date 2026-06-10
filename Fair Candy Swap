@@ -1,0 +1,28 @@
+Fair Candy Swap
+
+
+
+
+import java.util.HashSet;
+import java.util.Set;
+
+class Solution {
+    public int[] fairCandySwap(int[] A, int[] B) {
+        int sumA = 0, sumB = 0;
+        for (int a : A) sumA += a;
+        for (int b : B) sumB += b;
+        
+        int diff = (sumA - sumB) / 2; // positive means Alice has more
+        
+        Set<Integer> setB = new HashSet<>();
+        for (int b : B) setB.add(b);
+        
+        for (int a : A) {
+            int needed = a - diff;
+            if (setB.contains(needed)) {
+                return new int[]{a, needed};
+            }
+        }
+        return new int[0]; // unreachable
+    }
+}
